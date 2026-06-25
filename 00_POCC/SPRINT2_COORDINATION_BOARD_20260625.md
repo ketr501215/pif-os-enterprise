@@ -75,3 +75,14 @@ Date: 2026-06-25
 | Constitution Project Priority Governance proposal | `00_POCC/CHATGPT_TO_ALL_DAILY_REPORT_ENHANCEMENT_20260625.md` | RECEIVED_AS_PROPOSAL | Claude Code + Ray |
 | Add Need Review / Need Ray Decision / Next Agent fields | `00_POCC/CHATGPT_TO_ALL_DAILY_REPORT_ENHANCEMENT_20260625.md` | PENDING_RULE_UPDATE | Claude Code + Ray |
 | Constitution v1.1 to v1.2 upgrade | `02_CONSTITUTION/PIF_OS_Constitution_v1.2.md` | NOT_STARTED | Claude Code |
+
+## Simplified Agent Workflow Status
+
+Date: 2026-06-25
+
+| Item | File | Status | Next Owner |
+|---|---|---|---|
+| S2-009 Simplified Agent status/daily rule | `00_POCC/AGENT_RULES.md` Article 13 | ACTIVE | All Agents |
+| Shared work package folder | `09_PROJECT_OS/WORK_PACKAGE/` | ACTIVE | POCC |
+| Shared review folder | `09_PROJECT_OS/REVIEW/` | ACTIVE | Claude Gate |
+| Shared decision log | `09_PROJECT_OS/DECISION_LOG.md` | ACTIVE | Ray / POCC |

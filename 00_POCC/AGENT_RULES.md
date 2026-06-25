@@ -1,4 +1,4 @@
-# PIF OS — AGENT RULES（Agent 工作守則）
+﻿# PIF OS — AGENT RULES（Agent 工作守則）
 > **版本**：v0.1 | **生效日**：2026-06-25 | **制定者**：Ray（Product Owner）
 >
 > 所有 Agent（Claude Code、Codex、ChatGPT、Gemini CLI、Antigravity）
@@ -219,62 +219,99 @@ KB 以唯讀方式共享，廠家無法修改
 
 ---
 
-## 第十三條｜每日開機日報制度（2026-06-25 Ray 拍板）
+## 第十三條｜Agent 最小交接制度（2026-06-25 Ray 拍板）
 
-**今日起生效。所有 Agent 每日開機後必須建立當日日報，收工前更新「昨日達成」欄位。**
+**Agent 之間不寫信，不維護多重 mailbox。每位 Agent 每天只維護兩類檔案：一個狀態、一個日報。**
 
-### 日報位置
+### Agent 個人資料夾
 
 ```text
-08_AGENT_OS/[Agent]/DAILY_[Agent]_YYYYMMDD.md
+08_AGENT_OS/[Agent]/
+  STATUS.md
+  DAILY_YYYYMMDD.md
 ```
 
 範例：
 
 ```text
-08_AGENT_OS/Codex/DAILY_Codex_20260625.md
-08_AGENT_OS/ChatGPT/DAILY_ChatGPT_20260625.md
+08_AGENT_OS/Codex/STATUS.md
+08_AGENT_OS/Codex/DAILY_20260625.md
 ```
 
-### 今日優先序
+### STATUS.md 規則
 
-| 序 | 子系統 | 優先 | 為什麼 |
-|---:|---|---|---|
-| 1 | 法規知識庫 | P0 | 系統根源，限量基準錯會導致全部 MoS 錯；BUG-001/002/003 根因在此 |
-| 2 | 原料/功效知識庫 | P0（並行） | 依賴法規 KB 定標準，但填充可同步推進 |
-| 3 | 文件管理系統 | P1 | 約 70% 運作中，需持續優化但不阻塞 P0 |
-| 4 | 版期管理/備份 | P2 | Git + Google Drive 已在運作，正式化最後做 |
+`STATUS.md` 永遠只保留一頁，建議不超過十行。用途是讓其他 Agent 一眼知道你目前狀態。
 
-### Agent 主責
-
-| 工作 | 主責 | Gate / Review |
-|---|---|---|
-| 法規 KB + 原料/功效 KB | Codex | Claude Code |
-| 文件管理 | Claude Code | ChatGPT PMO |
-| 版期備份 | Claude Code + Gemini CLI | Ray / POCC |
-
-### 日報必填欄位
+最小格式：
 
 ```markdown
-# DAILY_[Agent]_YYYYMMDD
+Working
+- [目前正在做的工作包]
 
-- Agent:
-- 日期:
-- 開機時間:
-- 今日主責:
-- 昨日達成:
-- 今日目標:
-- 今日已完成:
-- 今日阻塞:
-- 需其他 Agent 接手:
-- 收工狀態: OPEN / CLOSED / HOLD
-- GitHub / Sync 狀態:
+Waiting
+- [正在等誰/等什麼]
+
+Next
+- [下一步]
+
+Progress
+- [百分比或一句話]
 ```
 
-### 執行規則
+### DAILY_YYYYMMDD.md 規則
 
-1. 每日開機後先讀 `00_POCC/PROJECT_STATUS.md`、`00_POCC/TASK_BOARD.md`、`00_POCC/CHANGELOG.md`，再建立當日日報。
-2. 日報必須放在自己的 Agent 資料夾，不得放在聊天紀錄。
-3. 收工前必須更新「昨日達成」欄位，供次日開機判讀。
-4. 若未完成收工，`收工狀態` 必須標示 `OPEN` 或 `HOLD`，不得留白。
-5. 日報可引用 Git commit SHA，但不得包含客戶配方、CoA、SDS 或其他私密資料。
+每天一份，收工前更新。用途是保留當天事實紀錄，不作為跨 Agent 信件。
+
+最小格式：
+
+```markdown
+完成
+- ...
+
+新增
+- ...
+
+等待
+- ...
+
+明天
+- ...
+```
+
+### Agent 如何交接
+
+不得用 inbox/outbox。其他 Agent 直接讀對方的 `STATUS.md`。
+
+例如 ChatGPT 的 `STATUS.md` 寫：
+
+```markdown
+Waiting
+- Claude Review WP001
+```
+
+Claude 看到後即可知道下一步輪到自己。
+
+### 共用資訊集中位置
+
+所有跨 Agent 共用資訊只放在：
+
+```text
+09_PROJECT_OS/
+  WORK_PACKAGE/
+  REVIEW/
+  DECISION_LOG.md
+```
+
+| 類型 | 權威位置 |
+|---|---|
+| 工作包 | `09_PROJECT_OS/WORK_PACKAGE/WPxxx.md` |
+| Review | `09_PROJECT_OS/REVIEW/WPxxx_REVIEW.md` |
+| Decision | `09_PROJECT_OS/DECISION_LOG.md` |
+
+### 執行鐵則
+
+1. 每位 Agent 每天最多只更新自己的 `STATUS.md` 與 `DAILY_YYYYMMDD.md`。
+2. 跨 Agent 任務狀態寫進工作包，不寫信。
+3. Review 寫進 `09_PROJECT_OS/REVIEW/`，不寫信。
+4. 決策只寫進 `09_PROJECT_OS/DECISION_LOG.md`。
+5. `00_POCC` 保留歷史文件與控制中心，不再作為新 mailbox 擴張區。
