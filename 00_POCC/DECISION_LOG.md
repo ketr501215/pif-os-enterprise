@@ -38,6 +38,13 @@ Decision: 現行採情境 A（廠家只收交付物，Ray 一人操作），預�
 Reason: 情境 A 成本最低，符合當前一人公司規模；情境 B 是未來「導入」的自然擴充路徑，預留不做過度設計。
 Owner: Ray 拍板 | 寫入 AGENT_RULES.md 第十二條
 
+## ADR-010 - KB 引用與多租戶隔離提升為 Constitution 條文
+
+Date: 2026-06-25
+Decision: AGENT_RULES 第十一條（KB 引用原則）與第十二條（多租戶隔離）正式提升為 Constitution Article 3 & Article 4。Constitution 版本從 v1.0（Gemini 草稿）升為 v1.1。
+Reason: 這兩條是整個系統的核心治理原則，需更高修改門檻；ChatGPT 提案，Claude Code 支持，Ray 採納。
+Owner: Ray 拍板 | 執行：Claude Code | 文件：02_CONSTITUTION/PIF_OS_Constitution_v1.1.md
+
 ## D007 - WP-006A 部份採納
 
 Date: 2026-06-25
