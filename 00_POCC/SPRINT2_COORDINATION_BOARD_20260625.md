@@ -65,3 +65,13 @@ Date: 2026-06-25
 | S2-008 Daily report protocol | `08_AGENT_OS/DAILY_REPORT_PROTOCOL_v0.1.md` | ACTIVE | All Agents |
 | Codex daily report | `08_AGENT_OS/Codex/DAILY_Codex_20260625.md` | CREATED | Codex |
 | ChatGPT daily report placeholder | `08_AGENT_OS/ChatGPT/DAILY_ChatGPT_20260625.md` | WAITING_FOR_CHATGPT_CONTENT | ChatGPT |
+
+## ChatGPT Daily Report Enhancement Proposal
+
+Date: 2026-06-25
+
+| Item | File | Status | Next Owner |
+|---|---|---|---|
+| Constitution Project Priority Governance proposal | `00_POCC/CHATGPT_TO_ALL_DAILY_REPORT_ENHANCEMENT_20260625.md` | RECEIVED_AS_PROPOSAL | Claude Code + Ray |
+| Add Need Review / Need Ray Decision / Next Agent fields | `00_POCC/CHATGPT_TO_ALL_DAILY_REPORT_ENHANCEMENT_20260625.md` | PENDING_RULE_UPDATE | Claude Code + Ray |
+| Constitution v1.1 to v1.2 upgrade | `02_CONSTITUTION/PIF_OS_Constitution_v1.2.md` | NOT_STARTED | Claude Code |
