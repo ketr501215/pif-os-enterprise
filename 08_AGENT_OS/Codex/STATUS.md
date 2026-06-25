@@ -1,5 +1,5 @@
 ﻿Working
-- WP001 Agent workflow simplification complete; next is Master Blueprint Index
+- Worklog and next-boot handoff completed; next is Master Blueprint Index
 
 Waiting
 - Claude Review: WP001 simplified workflow PASS/HOLD
@@ -9,4 +9,4 @@ Next
 - Start 04_KNOWLEDGE_OS/SCHEMA_v0.1.md
 
 Progress
-- Codex-owned Sprint 2 builder work: 40%; tomorrow target: 60%
+- Codex-owned Sprint 2 builder work: 40%; next boot target: 60%
