@@ -23,3 +23,23 @@ Reason: Prevent false backup claims and avoid leaking confidential client data.
 Date: 2026-06-25
 Decision: First architecture is the POCC v0.2 + Business OS Sprint 1 + PIF/ISO product-line skeleton.
 Reason: This creates a restartable company control center before deeper engine/database work begins.
+
+## D005 - KB 與工作區引用原則
+
+Date: 2026-06-25
+Decision: 工作區不複製 KB 原始資料，只引用計算結果。Metadata 必須記錄 KB 版本號與引用日期。KB 更新不自動影響已封版 PIF，需人工重產。
+Reason: 防止 KB 污染；確保每份 PIF 可追溯到產製當時的知識狀態。
+Owner: Ray 拍板 | 寫入 AGENT_RULES.md 第十一條
+
+## D006 - 多租戶隔離策略
+
+Date: 2026-06-25
+Decision: 現行採情境 A（廠家只收交付物，Ray 一人操作），預留情境 B 介面（廠家有 Google Drive 帳號，帳號層隔離）。
+Reason: 情境 A 成本最低，符合當前一人公司規模；情境 B 是未來「導入」的自然擴充路徑，預留不做過度設計。
+Owner: Ray 拍板 | 寫入 AGENT_RULES.md 第十二條
+
+## D007 - WP-006A 部份採納
+
+Date: 2026-06-25
+Decision: ChatGPT WP-006A 三項提案中：提案 1（00_EXECUTIVE）拒絕（與 00_POCC 重複）；提案 2（01→10_BUSINESS_OS 改號）拒絕（與 10_PRODUCT_LINES 撞號）；提案 3（08_AGENT_OS 子資料夾）採納並執行。
+Owner: Ray 拍板 | Claude Code 執行
