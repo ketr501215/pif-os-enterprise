@@ -1,11 +1,11 @@
 ﻿Working
-- Review WP001
+- Constitution v1.2 完成
 
 Waiting
-- WP001_REVIEW
+- Codex: 04_KNOWLEDGE_OS Schema v0.1
 
 Next
-- Review AGENT_RULES Article 13
+- Gate Review KB Schema（Codex 交付後）
 
 Progress
-- 35%
+- Sprint 1: 100% / Sprint 2: 15%
