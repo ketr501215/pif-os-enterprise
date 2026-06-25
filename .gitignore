@@ -1,0 +1,27 @@
+# === 客戶機密（絕對不推）===
+客戶資料_Private_Client_Data/
+**/CoA/
+**/SDS/
+**/*配方*
+**/*_client_*
+**/*永悅*
+**/*Biolume*
+
+# === 大型二進位（靠 Google Drive 備份，不進 git）===
+*.pdf
+*.docx
+*.xlsx
+*.zip
+*.png
+*.jpg
+*.jpeg
+
+# === 系統暫存 ===
+.DS_Store
+Thumbs.db
+~$*
+*.tmp
+__pycache__/
+*.pyc
+.env
+*.log
