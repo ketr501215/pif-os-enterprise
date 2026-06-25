@@ -11,3 +11,12 @@ __pycache__/
 ~$*
 .DS_Store
 Thumbs.db
+
+# 大型二進位（靠 Google Drive 備份，不進 git）
+*.pdf
+*.docx
+*.xlsx
+*.zip
+*.png
+*.jpg
+*.jpeg
