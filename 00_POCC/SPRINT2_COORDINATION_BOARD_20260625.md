@@ -45,3 +45,13 @@ Create these five files first:
 3. `04_KNOWLEDGE_OS/SOURCE_REGISTRY_v0.1.md`
 4. `04_KNOWLEDGE_OS/REGULATORY_KB_SCHEMA_v0.1.md`
 5. `04_KNOWLEDGE_OS/INGREDIENT_KB_SCHEMA_v0.1.md`
+
+## Architecture Discussion Reply Status
+
+Date: 2026-06-25
+
+| Item | File | Status | Next Owner |
+|---|---|---|---|
+| Codex multitenant architecture reply | `00_POCC/CODEX_TO_CLAUDE_ARCH_REPLY_20260625.md` | READY_FOR_GATE | Claude Code |
+| Claude Gate review | `00_POCC/CLAUDE_TO_CODEX_ARCH_REVIEW_20260625.md` | WAITING | Claude Code |
+| Ray final promotion | AGENT_RULES / schema build approval | WAITING | Ray |
