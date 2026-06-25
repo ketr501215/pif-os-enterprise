@@ -50,3 +50,10 @@ Owner: Ray 拍板 | 執行：Claude Code | 文件：02_CONSTITUTION/PIF_OS_Const
 Date: 2026-06-25
 Decision: ChatGPT WP-006A 三項提案中：提案 1（00_EXECUTIVE）拒絕（與 00_POCC 重複）；提案 2（01→10_BUSINESS_OS 改號）拒絕（與 10_PRODUCT_LINES 撞號）；提案 3（08_AGENT_OS 子資料夾）採納並執行。
 Owner: Ray 拍板 | Claude Code 執行
+
+## D008 - 每日開機日報制度
+
+Date: 2026-06-25
+Decision: 今日起所有 Agent 每日開機後必須在 `08_AGENT_OS/[Agent]/DAILY_[Agent]_YYYYMMDD.md` 建立當日日報，收工前更新「昨日達成」欄位。
+Reason: 讓一人公司 OS 具備可銜接、可稽核、可跨 Agent 接手的每日工作記錄，避免聊天紀錄成為唯一上下文。
+Owner: Ray 拍板 | Codex 落地 | 寫入 AGENT_RULES.md 第十三條

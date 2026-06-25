@@ -216,3 +216,65 @@ KB 以唯讀方式共享，廠家無法修改
 ---
 
 *PIF OS Constitution v0.1 — Agent Rules Chapter*
+
+---
+
+## 第十三條｜每日開機日報制度（2026-06-25 Ray 拍板）
+
+**今日起生效。所有 Agent 每日開機後必須建立當日日報，收工前更新「昨日達成」欄位。**
+
+### 日報位置
+
+```text
+08_AGENT_OS/[Agent]/DAILY_[Agent]_YYYYMMDD.md
+```
+
+範例：
+
+```text
+08_AGENT_OS/Codex/DAILY_Codex_20260625.md
+08_AGENT_OS/ChatGPT/DAILY_ChatGPT_20260625.md
+```
+
+### 今日優先序
+
+| 序 | 子系統 | 優先 | 為什麼 |
+|---:|---|---|---|
+| 1 | 法規知識庫 | P0 | 系統根源，限量基準錯會導致全部 MoS 錯；BUG-001/002/003 根因在此 |
+| 2 | 原料/功效知識庫 | P0（並行） | 依賴法規 KB 定標準，但填充可同步推進 |
+| 3 | 文件管理系統 | P1 | 約 70% 運作中，需持續優化但不阻塞 P0 |
+| 4 | 版期管理/備份 | P2 | Git + Google Drive 已在運作，正式化最後做 |
+
+### Agent 主責
+
+| 工作 | 主責 | Gate / Review |
+|---|---|---|
+| 法規 KB + 原料/功效 KB | Codex | Claude Code |
+| 文件管理 | Claude Code | ChatGPT PMO |
+| 版期備份 | Claude Code + Gemini CLI | Ray / POCC |
+
+### 日報必填欄位
+
+```markdown
+# DAILY_[Agent]_YYYYMMDD
+
+- Agent:
+- 日期:
+- 開機時間:
+- 今日主責:
+- 昨日達成:
+- 今日目標:
+- 今日已完成:
+- 今日阻塞:
+- 需其他 Agent 接手:
+- 收工狀態: OPEN / CLOSED / HOLD
+- GitHub / Sync 狀態:
+```
+
+### 執行規則
+
+1. 每日開機後先讀 `00_POCC/PROJECT_STATUS.md`、`00_POCC/TASK_BOARD.md`、`00_POCC/CHANGELOG.md`，再建立當日日報。
+2. 日報必須放在自己的 Agent 資料夾，不得放在聊天紀錄。
+3. 收工前必須更新「昨日達成」欄位，供次日開機判讀。
+4. 若未完成收工，`收工狀態` 必須標示 `OPEN` 或 `HOLD`，不得留白。
+5. 日報可引用 Git commit SHA，但不得包含客戶配方、CoA、SDS 或其他私密資料。

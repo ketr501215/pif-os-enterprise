@@ -55,3 +55,13 @@ Date: 2026-06-25
 | Codex multitenant architecture reply | `00_POCC/CODEX_TO_CLAUDE_ARCH_REPLY_20260625.md` | READY_FOR_GATE | Claude Code |
 | Claude Gate review | `00_POCC/CLAUDE_TO_CODEX_ARCH_REVIEW_20260625.md` | WAITING | Claude Code |
 | Ray final promotion | AGENT_RULES / schema build approval | WAITING | Ray |
+
+## Daily Report Rule Status
+
+Date: 2026-06-25
+
+| Item | File | Status | Next Owner |
+|---|---|---|---|
+| S2-008 Daily report protocol | `08_AGENT_OS/DAILY_REPORT_PROTOCOL_v0.1.md` | ACTIVE | All Agents |
+| Codex daily report | `08_AGENT_OS/Codex/DAILY_Codex_20260625.md` | CREATED | Codex |
+| ChatGPT daily report placeholder | `08_AGENT_OS/ChatGPT/DAILY_ChatGPT_20260625.md` | WAITING_FOR_CHATGPT_CONTENT | ChatGPT |
