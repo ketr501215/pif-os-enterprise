@@ -1,4 +1,24 @@
-﻿# WORKLOG_20260625_FINAL.md
+﻿# Compatibility Note - Not Authoritative Current Sync
+
+Status: RECEIVED_CLAUDE_DRAFT
+
+This file is preserved as a received Claude Code worklog draft. The authoritative closeout files for next boot are:
+
+```text
+09_PROJECT_OS/WORKLOG_20260625.md
+09_PROJECT_OS/NEXT_BOOT_HANDOFF_20260626.md
+09_PROJECT_OS/NEXT_BOOT_PROGRESS_FORECAST_20260626.md
+00_POCC/SYNC_STATUS.md
+```
+
+Known drift to verify before relying on this draft:
+
+- This draft mentions an older final HEAD. Current sync truth is `00_POCC/SYNC_STATUS.md`.
+- Repo visibility / binary tracking must be verified from GitHub and Git state, not this draft.
+- Use this draft as supplementary context only.
+
+---
+# WORKLOG_20260625_FINAL.md
 # PIF OS Enterprise — 2026-06-25 完整工作記錄
 # 撰寫：Claude Code | 收工時間：當日 EOD
 
@@ -116,3 +136,4 @@
 | OFFER_CATALOG 定價 | 哪些欄位可公開寫入 repo？ |
 | Google Drive Mirror | 指派 Gemini 做 F: ↔ Drive SHA 驗證？ |
 | BUG 修正序 | Codex 重抽完成後，SA 排程時間？ |
+
