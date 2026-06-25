@@ -1,0 +1,13 @@
+﻿# Keep Office/PDF/media artifacts byte-stable in Git backups
+*.pdf binary
+*.docx binary
+*.doc binary
+*.xlsx binary
+*.xls binary
+*.pptx binary
+*.ppt binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.zip binary
