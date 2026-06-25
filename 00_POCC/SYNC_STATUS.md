@@ -6,7 +6,7 @@ Date: 2026-06-25
 |---|---|---|---|
 | Local Master | F:\42-0 一人公司-規劃與運作\PIF_OS | PASS | Folder skeleton exists |
 | Local Git | branch main | PASS | Latest content commit $contentSha |
-| GitHub Private | https://github.com/ketr501215/pif-os-enterprise.git | PASS | git push completed; remote head below |
+| GitHub Public | https://github.com/ketr501215/pif-os-enterprise.git | PASS | git push completed; remote head below |
 | Mirror Drive | V:\PIF_OS_ENTERPRISE | HOLD | Mirror drive not verified in this session |
 | Client Private Exclusion | 12_CLIENTS_Private/ | PASS | .gitignore excludes folder; .gitattributes protects binary artifacts |
 
@@ -19,3 +19,4 @@ Date: 2026-06-25
 ## Rule
 
 Future Sprint 2 changes require fresh local commit, push, and status update.
+
