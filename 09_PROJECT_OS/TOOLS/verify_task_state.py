@@ -307,8 +307,24 @@ def validate_record(
         named_refs = {proof.get(field) for field in ("publication_ref", "ack_ref", "verification_ref", "gate_ref")}
         if not named_refs.issubset(set(proof.get("evidence_refs", []))):
             errors.append("E_COMPLETION_PROOF_EVIDENCE_REFS")
-        if lease.get("status") not in {"NONE", "RELEASED"} or not proof.get("lease_release_evidence"):
+        release_ref = proof.get("lease_release_evidence")
+        if lease.get("status") != "RELEASED" or not isinstance(release_ref, dict):
             errors.append("E_VERIFIED_LEASE_NOT_RELEASED")
+        elif release_ref.get("path") not in set(proof.get("evidence_refs", [])):
+            errors.append("E_LEASE_RELEASE_NOT_IN_EVIDENCE_REFS")
+        elif release_ref.get("path") in named_refs:
+            errors.append("E_LEASE_RELEASE_NOT_DISTINCT")
+        if lease.get("status") == "RELEASED":
+            if not lease.get("lease_id") or lease.get("fencing_token", 0) <= 0:
+                errors.append("E_RELEASED_LEASE_ID_OR_FENCE")
+            if lease.get("holder_agent_id") != record["actor"].get("agent_id"):
+                errors.append("E_RELEASED_LEASE_HOLDER_MISMATCH")
+            if lease.get("machine_id") != record["actor"].get("machine_id"):
+                errors.append("E_RELEASED_LEASE_MACHINE_MISMATCH")
+            if lease.get("site") != record["actor"].get("site"):
+                errors.append("E_RELEASED_LEASE_SITE_MISMATCH")
+            if not lease.get("heartbeat_at") or not lease.get("expires_at"):
+                errors.append("E_RELEASED_LEASE_TIME_UNKNOWN")
         if evaluation_mode != "LIVE":
             errors.append("E_HISTORICAL_NOT_LIVE_GATE")
     computed = effective_gate(record, now)
@@ -353,6 +369,9 @@ def validate_record(
             break
     if history and history[-1].get("to") != state:
         errors.append("E_HISTORY_HEAD")
+    history_states = {event.get("to") for event in history}
+    if lease.get("status") == "NONE" and history_states.intersection({"RUNNING", "PRODUCED", "PERSISTED"}):
+        errors.append("E_HISTORY_WRITE_WITHOUT_LEASE_EVIDENCE")
     return errors
 
 
@@ -416,6 +435,55 @@ def validate_live_artifact(record: dict, repo_root: Path) -> list[str]:
     except (OSError, subprocess.CalledProcessError, TypeError) as exc:
         errors.append("E_LIVE_ARTIFACT_UNKNOWN:" + type(exc).__name__)
     return errors
+
+
+def validate_live_lease_release(record: dict, repo_root: Path) -> list[str]:
+    """Resolve and bind a committed lease-release receipt for VERIFIED/CLOSED."""
+    if not state_at_least(record.get("current_state", ""), "VERIFIED"):
+        return []
+    release_ref = record.get("completion_proof", {}).get("lease_release_evidence")
+    if not isinstance(release_ref, dict):
+        return ["E_LIVE_LEASE_RELEASE_REQUIRED"]
+
+    probe = copy.deepcopy(record)
+    probe["artifact"] = release_ref
+    live_errors = ["E_LEASE_RELEASE_" + item for item in validate_live_artifact(probe, repo_root)]
+    try:
+        receipt_bytes = subprocess.run(
+            ["git", "-C", str(repo_root), "show", f"{release_ref['git_commit']}:{release_ref['path']}"],
+            check=True, capture_output=True,
+        ).stdout
+        receipt = json.loads(receipt_bytes.decode("utf-8-sig"))
+    except (OSError, subprocess.CalledProcessError, KeyError, UnicodeDecodeError, json.JSONDecodeError):
+        return live_errors + ["E_LEASE_RELEASE_RECEIPT_UNREADABLE"]
+
+    lease = record["lease"]
+    expected = {
+        "schema_version": "rayflow.lease-release/v0.1",
+        "task_id": record["task_id"],
+        "resource": lease.get("resource"),
+        "lease_id": lease.get("lease_id"),
+        "holder_agent_id": lease.get("holder_agent_id"),
+        "machine_id": lease.get("machine_id"),
+        "site": lease.get("site"),
+        "fencing_token": lease.get("fencing_token"),
+        "last_heartbeat_at": lease.get("heartbeat_at"),
+        "expires_at": lease.get("expires_at"),
+        "status": "RELEASED",
+    }
+    for field, value in expected.items():
+        if receipt.get(field) != value:
+            live_errors.append("E_LEASE_RELEASE_BINDING:" + field)
+    try:
+        acquired = parse_time(receipt["acquired_at"])
+        heartbeat = parse_time(receipt["last_heartbeat_at"])
+        released = parse_time(receipt["released_at"])
+        expires = parse_time(receipt["expires_at"])
+        if not (acquired <= heartbeat <= released < expires):
+            live_errors.append("E_LEASE_RELEASE_TIME_ORDER")
+    except (AttributeError, KeyError, TypeError, ValueError):
+        live_errors.append("E_LEASE_RELEASE_TIME_UNKNOWN")
+    return live_errors
 
 
 def validate_recovery_evidence(
@@ -572,9 +640,9 @@ def base_record() -> dict:
         "delivery": {"required_publish_operation": "PUSH", "expected_commit": "b" * 40, "observed_commit": "b" * 40, "expected_content_sha256": "a" * 64, "observed_content_sha256": "a" * 64, "observer_agent_id": "CLAUDE", "observation_method": "git-show-and-hash", "ack": "YES"},
         "verification": {"verifier_agent_id": "ADVERSARY", "method_class": "ADVERSARIAL_TEST", "independent_of_builder": True, "verdict": "PASS", "evidence_ref": "verification.json"},
         "gate": {"declared_verdict": "PASS", "computed_verdict": "PASS", "alarms": []},
-        "lease": {"resource": "repo:wp001", "lease_id": None, "holder_agent_id": None, "machine_id": None, "site": "NONE", "fencing_token": 2, "heartbeat_at": None, "expires_at": None, "status": "RELEASED"},
+        "lease": {"resource": "repo:wp001", "lease_id": "lease-test", "holder_agent_id": "CODEX", "machine_id": "HOME-1", "site": "HOME", "fencing_token": 2, "heartbeat_at": now_text, "expires_at": "2099-01-01T00:00:00Z", "status": "RELEASED"},
         "recovery": {"attempt_id": "attempt-1", "previous_attempt_id": None, "previous_idempotency_key": None, "previous_artifact_content_sha256": None, "previous_snapshot_ref": None, "previous_snapshot_sha256": None, "last_durable_state": "VERIFIED", "context_ref": None, "context_digest": None, "resume_allowed": False},
-        "completion_proof": {"proof_id": "proof-test", "evaluation_mode": "LIVE", "evaluated_at": now_text, "artifact_verified_live": True, "publication_ref": "publication.json", "ack_ref": "ack.json", "verification_ref": "verification.json", "gate_ref": "gate.json", "evidence_refs": ["publication.json", "ack.json", "verification.json", "gate.json"], "lease_release_evidence": "lease.json", "ray_acceptance": None},
+        "completion_proof": {"proof_id": "proof-test", "evaluation_mode": "LIVE", "evaluated_at": now_text, "artifact_verified_live": True, "publication_ref": "publication.json", "ack_ref": "ack.json", "verification_ref": "verification.json", "gate_ref": "gate.json", "evidence_refs": ["publication.json", "ack.json", "verification.json", "gate.json", "lease.json"], "lease_release_evidence": {"repository": "repo", "branch": "main", "path": "lease.json", "content_sha256": "c" * 64, "git_commit": "d" * 40}, "ray_acceptance": None},
         "history": [
             {"sequence": i + 1, "from": STATES[i - 1] if i else None, "to": state, "at": now_text, "evidence_ref": f"evidence-{i + 1}"}
             for i, state in enumerate(STATES[:10])
@@ -641,6 +709,16 @@ def self_test() -> list[tuple[str, bool, str]]:
     expired_lease["updated_at"] = "2020-01-01T00:01:00Z"
     expired_errors = check(expired_lease)
     results.append(("T4_EXPIRED_LEASE_BLOCKS", "E_ACTIVE_LEASE_NOT_CURRENT" in expired_errors, ",".join(expired_errors)))
+
+    bootstrap_without_lease = base_record()
+    bootstrap_without_lease["lease"].update({"status": "NONE", "fencing_token": 0})
+    bootstrap_without_lease["completion_proof"]["lease_release_evidence"] = None
+    bootstrap_errors = check(bootstrap_without_lease)
+    results.append((
+        "T4_BOOTSTRAP_WITHOUT_LEASE_BLOCKS",
+        "E_VERIFIED_LEASE_NOT_RELEASED" in bootstrap_errors and "E_HISTORY_WRITE_WITHOUT_LEASE_EVIDENCE" in bootstrap_errors,
+        ",".join(bootstrap_errors),
+    ))
 
     alarm = base_record()
     alarm["gate"]["alarms"] = [{"alarm_id": "only-alarm", "severity": "CRITICAL", "verdict": "UNKNOWN", "evidence_ref": "alarm.json"}]
@@ -747,6 +825,7 @@ def main() -> int:
                 errors.append("E_LIVE_REPO_REQUIRED")
             else:
                 errors.extend(validate_live_artifact(records[0], args.repo_root.resolve()))
+                errors.extend(validate_live_lease_release(records[0], args.repo_root.resolve()))
         recovery = records[0].get("recovery", {})
         if recovery.get("previous_attempt_id") is not None:
             if args.previous_state is None:

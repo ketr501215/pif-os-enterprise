@@ -205,8 +205,17 @@ unexpired ACTIVE lease whose holder, machine, and site match the task actor.
 against the record's self-declared `updated_at`; a mutually consistent historical
 lease window is still expired for a live Gate.
 The lease may be released after PUBLISHED because remote bytes are then durable;
-VERIFIED requires release evidence so a completed verifier never leaves a writer
-live.
+VERIFIED requires `status=RELEASED` plus release evidence included in the
+Completion Proof evidence set, so `status=NONE` or a generic T4 test report
+cannot fabricate a historical release. A lifecycle history containing write
+states while lease status is NONE is explicitly blocked.
+
+`lease_release_evidence` is an artifact proof object, not a free-text path. It
+binds repository, branch, receipt path, receipt commit, and receipt SHA-256. The
+verifier reads those committed bytes from a live-observed branch and requires a
+`rayflow.lease-release/v0.1` receipt whose task, resource, lease ID, holder,
+machine/site, fencing token, heartbeat, expiry, and RELEASED status match the
+task record. A missing file or plausible-looking filename remains BLOCK.
 
 This prevents T4 double execution without relying on device names or clocks as
 authority.

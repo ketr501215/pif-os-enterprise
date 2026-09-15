@@ -215,8 +215,8 @@
         "ack_ref": {"type": "string", "minLength": 1},
         "verification_ref": {"type": "string", "minLength": 1},
         "gate_ref": {"type": "string", "minLength": 1},
-        "evidence_refs": {"type": "array", "minItems": 4, "items": {"type": "string", "minLength": 1}},
-        "lease_release_evidence": {"type": ["string", "null"]},
+        "evidence_refs": {"type": "array", "minItems": 5, "items": {"type": "string", "minLength": 1}},
+        "lease_release_evidence": {"anyOf": [{"$ref": "#/$defs/artifact"}, {"type": "null"}]},
         "ray_acceptance": {"type": ["string", "null"]}
       }
     },
