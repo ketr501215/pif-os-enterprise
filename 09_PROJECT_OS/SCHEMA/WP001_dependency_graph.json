@@ -13,32 +13,19 @@
       "evidence_ref": "09_PROJECT_OS/REVIEW/WP001_REVIEW.md"
     },
     {
-      "task_id": "WP001_SCHEMA_BUILD",
+      "task_id": "WP001-SCHEMA",
       "owner": "Codex",
-      "required_state": "PUBLISHED",
+      "required_state": "VERIFIED",
       "depends_on": ["WP001_WORKFLOW_GATE"],
       "dependency_policy": "GATE_MAY_BE_BLOCK_WITH_CANDIDATE_BUILD_ONLY",
-      "artifact": "04_KNOWLEDGE_OS/SCHEMA_v0.1.md"
-    },
-    {
-      "task_id": "WP001_SCHEMA_ACK",
-      "owner": "Claude Code",
-      "required_state": "ACKED",
-      "depends_on": ["WP001_SCHEMA_BUILD"],
-      "artifact": "09_PROJECT_OS/ACK/WP001-SCHEMA_CLAUDE_ACK.json"
-    },
-    {
-      "task_id": "WP001_SCHEMA_VERIFY",
-      "owner": "Independent verifier",
-      "required_state": "VERIFIED",
-      "depends_on": ["WP001_SCHEMA_ACK"],
-      "artifact": "09_PROJECT_OS/VERIFICATION/WP001-SCHEMA_INDEPENDENT.json"
+      "artifact": "04_KNOWLEDGE_OS/SCHEMA_v0.1.md",
+      "milestones": ["PUBLISHED", "OBSERVED", "ACKED", "VERIFIED"]
     },
     {
       "task_id": "WP001_RAY_ACCEPTANCE",
       "owner": "Ray",
       "required_state": "CLOSED",
-      "depends_on": ["WP001_WORKFLOW_GATE", "WP001_SCHEMA_VERIFY"],
+      "depends_on": ["WP001_WORKFLOW_GATE", "WP001-SCHEMA"],
       "required_gate": "PASS",
       "artifact": "09_PROJECT_OS/DECISION_LOG.md"
     }

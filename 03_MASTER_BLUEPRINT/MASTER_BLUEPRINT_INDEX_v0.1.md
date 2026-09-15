@@ -51,7 +51,7 @@ closed. No last-writer-wins or majority vote resolves a governance conflict.
 | `04_KNOWLEDGE_OS/SCHEMA_v0.1.md` | Human-readable contract and transition rules |
 | `09_PROJECT_OS/SCHEMA/task-state-v0.1.schema.json` | Machine-readable record shape |
 | `09_PROJECT_OS/SCHEMA/WP001_dependency_graph.json` | Acyclic dependency graph separating WP001 and KB Schema gates |
-| `09_PROJECT_OS/TOOLS/verify_task_state.py` | Fail-closed invariant checker and T2/T4/T7/T8 tests |
+| `09_PROJECT_OS/TOOLS/verify_task_state.py` | Fail-closed invariant checker and I1/T2/T4/T7/T8 tests |
 | `09_PROJECT_OS/STATE/` | Durable task snapshots; later proof must bind exact commit and content SHA |
 | `09_PROJECT_OS/ACK/` | Recipient-authored exact artifact observations and ACK decisions |
 | `09_PROJECT_OS/VERIFICATION/` | Method-independent verification reports |
@@ -88,6 +88,8 @@ The machine-readable form is
 - `WP001 != CLOSED` while Claude Gate is BLOCK or Ray acceptance is absent.
 - The current build does not amend Constitution v1.2 or activate a new protocol.
 - A local file, commit message, status line, or agent assertion is not delivery.
+- `GitHub READY` is forbidden as a global capability claim; READ and WRITE are
+  observed per actor, credential reference, repository/ref, operation, and time.
 - `PUBLISHED` requires live remote observation of the exact commit containing the
   exact content SHA.
 - `ACKED` requires recipient-side expected/observed commit and content equality.

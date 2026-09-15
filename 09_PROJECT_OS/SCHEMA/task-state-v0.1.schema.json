@@ -14,6 +14,7 @@
     "criticality",
     "current_state",
     "actor",
+    "capabilities",
     "dependencies",
     "artifact",
     "delivery",
@@ -21,6 +22,7 @@
     "gate",
     "lease",
     "recovery",
+    "completion_proof",
     "history",
     "updated_at"
   ],
@@ -36,6 +38,10 @@
       "enum": ["CREATED", "DISPATCHED", "ACCEPTED", "RUNNING", "PRODUCED", "PERSISTED", "PUBLISHED", "OBSERVED", "ACKED", "VERIFIED", "CLOSED"]
     },
     "actor": {"$ref": "#/$defs/actor"},
+    "capabilities": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/capability"}
+    },
     "dependencies": {
       "type": "array",
       "items": {"$ref": "#/$defs/dependency"}
@@ -46,6 +52,7 @@
     "gate": {"$ref": "#/$defs/gate"},
     "lease": {"$ref": "#/$defs/lease"},
     "recovery": {"$ref": "#/$defs/recovery"},
+    "completion_proof": {"$ref": "#/$defs/completion_proof"},
     "history": {
       "type": "array",
       "items": {"$ref": "#/$defs/history_event"}
@@ -58,9 +65,10 @@
     "actor": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["agent_id", "role", "vendor", "machine_id", "site", "session_id"],
+      "required": ["agent_id", "credential_ref", "role", "vendor", "machine_id", "site", "session_id"],
       "properties": {
         "agent_id": {"type": "string", "minLength": 1},
+        "credential_ref": {"type": "string", "minLength": 1},
         "role": {"enum": ["HUMAN", "LEAD", "PLANNER", "BUILDER", "VERIFIER", "ADVERSARY", "ORCHESTRATOR"]},
         "vendor": {"type": "string", "minLength": 1},
         "machine_id": {"type": "string", "minLength": 1},
@@ -80,6 +88,27 @@
         "evidence_ref": {"type": ["string", "null"]}
       }
     },
+    "capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actor_id", "credential_ref", "machine_id", "site", "repository", "ref", "operation", "expected_state", "live_observation", "observed_outcome", "result_code", "observed_at", "evidence_ref", "verdict"],
+      "properties": {
+        "actor_id": {"type": "string", "minLength": 1},
+        "credential_ref": {"type": "string", "minLength": 1},
+        "machine_id": {"type": "string", "minLength": 1},
+        "site": {"enum": ["HOME", "SCHOOL", "CLOUD", "OTHER"]},
+        "repository": {"type": "string", "minLength": 1},
+        "ref": {"type": "string", "minLength": 1},
+        "operation": {"enum": ["READ", "WRITE", "CREATE_ISSUE", "PUSH", "ACK"]},
+        "expected_state": {"const": "READY"},
+        "live_observation": {"type": "string", "minLength": 1},
+        "observed_outcome": {"enum": ["SUCCESS", "DENIED", "FAILED", "UNKNOWN"]},
+        "result_code": {"type": "string", "minLength": 1},
+        "observed_at": {"type": "string", "format": "date-time"},
+        "evidence_ref": {"type": "string", "minLength": 1},
+        "verdict": {"enum": ["PASS", "BLOCK", "DEGRADED", "UNKNOWN"]}
+      }
+    },
     "artifact": {
       "type": "object",
       "additionalProperties": false,
@@ -95,8 +124,9 @@
     "delivery": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["expected_commit", "observed_commit", "expected_content_sha256", "observed_content_sha256", "observer_agent_id", "observation_method", "ack"],
+      "required": ["required_publish_operation", "expected_commit", "observed_commit", "expected_content_sha256", "observed_content_sha256", "observer_agent_id", "observation_method", "ack"],
       "properties": {
+        "required_publish_operation": {"enum": ["WRITE", "PUSH"]},
         "expected_commit": {"anyOf": [{"$ref": "#/$defs/commit"}, {"type": "null"}]},
         "observed_commit": {"anyOf": [{"$ref": "#/$defs/commit"}, {"type": "null"}]},
         "expected_content_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
@@ -144,7 +174,7 @@
       "additionalProperties": false,
       "required": ["resource", "lease_id", "holder_agent_id", "machine_id", "site", "fencing_token", "heartbeat_at", "expires_at", "status"],
       "properties": {
-        "resource": {"type": "string", "minLength": 1},
+        "resource": {"type": "string", "pattern": "^[a-z0-9][a-z0-9:/._-]+$"},
         "lease_id": {"type": ["string", "null"]},
         "holder_agent_id": {"type": ["string", "null"]},
         "machine_id": {"type": ["string", "null"]},
@@ -158,13 +188,36 @@
     "recovery": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["attempt_id", "previous_attempt_id", "last_durable_state", "context_digest", "resume_allowed"],
+      "required": ["attempt_id", "previous_attempt_id", "previous_idempotency_key", "previous_artifact_content_sha256", "previous_snapshot_ref", "previous_snapshot_sha256", "last_durable_state", "context_ref", "context_digest", "resume_allowed"],
       "properties": {
         "attempt_id": {"type": "string", "minLength": 1},
         "previous_attempt_id": {"type": ["string", "null"]},
+        "previous_idempotency_key": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "previous_artifact_content_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "previous_snapshot_ref": {"type": ["string", "null"]},
+        "previous_snapshot_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
         "last_durable_state": {"type": "string"},
+        "context_ref": {"type": ["string", "null"]},
         "context_digest": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
         "resume_allowed": {"type": "boolean"}
+      }
+    },
+    "completion_proof": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["proof_id", "evaluation_mode", "evaluated_at", "artifact_verified_live", "publication_ref", "ack_ref", "verification_ref", "gate_ref", "evidence_refs", "lease_release_evidence", "ray_acceptance"],
+      "properties": {
+        "proof_id": {"type": "string", "minLength": 1},
+        "evaluation_mode": {"enum": ["LIVE", "HISTORICAL"]},
+        "evaluated_at": {"type": "string", "format": "date-time"},
+        "artifact_verified_live": {"type": "boolean"},
+        "publication_ref": {"type": "string", "minLength": 1},
+        "ack_ref": {"type": "string", "minLength": 1},
+        "verification_ref": {"type": "string", "minLength": 1},
+        "gate_ref": {"type": "string", "minLength": 1},
+        "evidence_refs": {"type": "array", "minItems": 4, "items": {"type": "string", "minLength": 1}},
+        "lease_release_evidence": {"type": ["string", "null"]},
+        "ray_acceptance": {"type": ["string", "null"]}
       }
     },
     "history_event": {

@@ -10,7 +10,8 @@ Date: 2026-09-15
 
 This is the smallest implementation contract needed to exercise WP001 without a
 demo. It governs task state, dependency resolution, artifact delivery, ACK,
-verification, Critical gates, cross-site leases, and restart recovery.
+verification, operation-scoped capabilities, Critical gates, cross-site leases,
+and restart recovery.
 
 The normative machine-readable shape is
 `09_PROJECT_OS/SCHEMA/task-state-v0.1.schema.json`. Cross-field invariants that
@@ -52,11 +53,35 @@ Required top-level fields:
 
 - `schema_version`, `task_id`, `work_package_id`, `title`
 - `requirement_revision`, `idempotency_key`, `criticality`, `current_state`
-- `actor`, `dependencies`, `artifact`, `delivery`, `verification`, `gate`
-- `lease`, `recovery`, `history`, `updated_at`
+- `actor`, `capabilities`, `dependencies`, `artifact`, `delivery`, `verification`, `gate`
+- `lease`, `recovery`, `completion_proof`, `history`, `updated_at`
 
 The record is a durable snapshot. An implementation may additionally keep an
 append-only event log, but no event log is required for v0.1.
+
+### Operation-scoped capability evidence
+
+There is no global `GitHub READY`. Each capability observation is scoped to:
+
+```text
+actor + credential_ref + machine/site + repository/ref + operation + observed_at
+```
+
+`READ`, `WRITE`, `CREATE_ISSUE`, `PUSH`, and `ACK` are separate and not
+interchangeable. The delivery record names the exact required publish operation.
+A successful read cannot imply a successful push. If the assigned actor and
+current credential reference, machine, and site have any computed BLOCK/UNKNOWN
+observation in the same repository/ref/operation scope, `PUBLISHED` is blocked
+even when an older observation says PASS or another actor can push successfully.
+The capability verdict is recomputed from `observed_outcome` and `result_code`;
+the stored verdict is only a comparison target. Credential references are opaque
+fingerprints; secrets must never enter the record.
+
+Ray reported a GitHub path with `READ_READY / WRITE_FAIL_403`; this is retained
+as user-reported evidence until the exact actor/operation/time response is
+persisted and independently reproduced or validated. In the same session,
+Codex pushes succeeded. These observations are actor-scoped, not contradictory
+global service states.
 
 ### Artifact and commit proof
 
@@ -71,6 +96,9 @@ An artifact proof is valid only when all of these are true:
 The artifact commit cannot safely contain its own commit hash. Therefore the
 publication/ACK/Completion Proof records are later artifacts that reference the
 immutable artifact commit. This avoids a self-referential hash claim.
+
+Live proof also compares the task record repository identity with the checkout
+`origin` URL. Bytes from a different repository cannot satisfy the proof.
 
 ## 4. ACK definition
 
@@ -108,6 +136,11 @@ A Completion Proof is an evidence index with:
 The record must remain `closed=false` when any required reference is absent. The
 record itself cannot close its own task.
 
+The machine record uses separate `publication_ref`, `ack_ref`,
+`verification_ref`, and `gate_ref` fields. A generic non-empty evidence list is
+not sufficient. It also records `evaluation_mode` and `evaluated_at`;
+`HISTORICAL` proof is forensic evidence and cannot satisfy a live Gate.
+
 ## 6. Machine-readable dependency solution
 
 Every dependency edge identifies a specific task and required state. Free-text
@@ -117,15 +150,18 @@ For WP001, the graph separates:
 
 - `WP001_WORKFLOW_GATE`: Claude reviews the existing workflow; it has no Schema
   dependency.
-- `WP001_SCHEMA_BUILD`: Codex builds the schema; it may proceed as candidate work
-  after the first Gate observation even while the parent remains BLOCK.
-- `WP001_SCHEMA_ACK`: Claude observes the exact Schema artifact commit.
-- `WP001_SCHEMA_VERIFY`: independent method checks T2/T4/T7/T8.
+- `WP001-SCHEMA`: one lifecycle task whose milestones are Codex publication,
+  Claude exact-artifact ACK, and independent T2/T4/T7/T8 verification. It may
+  proceed as candidate work after the workflow Gate is observed even while the
+  parent remains BLOCK.
 - `WP001_RAY_ACCEPTANCE`: depends on the governance conflict being cleared and
   all prior nodes being VERIFIED.
 
 A cycle detector must run before dispatch. A graph cycle, missing node, or
-ambiguous free-text dependency is `UNKNOWN => BLOCK`.
+ambiguous free-text dependency is `UNKNOWN => BLOCK`. A VERIFIED/CLOSED task
+record must also be checked against this graph: its task node must exist, every
+declared edge must be present with the graph-required state and evidence, and
+undeclared edges are rejected.
 
 ## 7. Idempotency key
 
@@ -163,6 +199,15 @@ Rules:
 6. Close requires RELEASED evidence. Missing/ambiguous lease state is UNKNOWN
    and blocks write transitions.
 
+`RUNNING`, `PRODUCED`, and `PERSISTED` are write-period states and require an
+unexpired ACTIVE lease whose holder, machine, and site match the task actor.
+"Unexpired" is evaluated against the verifier's live UTC wall clock, not merely
+against the record's self-declared `updated_at`; a mutually consistent historical
+lease window is still expired for a live Gate.
+The lease may be released after PUBLISHED because remote bytes are then durable;
+VERIFIED requires release evidence so a completed verifier never leaves a writer
+live.
+
 This prevents T4 double execution without relying on device names or clocks as
 authority.
 
@@ -173,6 +218,7 @@ The effective Gate is computed, not copied from an agent report:
 ```text
 if any Critical alarm is BLOCK:                 BLOCK
 else if any Critical alarm is UNKNOWN:          BLOCK
+else if required operation capability is not PASS: BLOCK
 else if required evidence is absent/stale:      BLOCK
 else if independent verification is not PASS:   BLOCK
 else if any noncritical alarm is DEGRADED:       DEGRADED
@@ -181,15 +227,19 @@ else:                                           PASS
 
 Votes are not inputs. One Critical alarm cannot be outvoted. An agent-authored
 `PASS` without the expected-state/live-observation comparison is ignored.
+The operation capability used for publication must be observed within 24 hours;
+an older success becomes UNKNOWN and cannot mask a newer denial such as HTTP 403.
 
 ## 10. Restart and context-compaction recovery
 
 On restart:
 
-1. Load the latest durable task snapshot and verify its schema/invariants.
+1. Load the latest durable task snapshot and execute both JSON Schema validation
+   and cross-field invariant checks.
 2. Verify the last artifact/ACK/proof hashes from their source bytes.
-3. Reuse the same idempotency key; create a new attempt ID only if execution is
-   resumed.
+3. Recompute the idempotency key from the canonical task tuple. On resume, bind
+   the exact previous snapshot bytes, previous idempotency key, artifact SHA, and
+   context file SHA; create a new attempt ID only if execution is resumed.
 4. Reacquire or prove the lease; never trust a pre-restart heartbeat.
 5. Resume from the last state with complete evidence. Do not infer the next state
    from a summary, filename, or existence check.
@@ -219,12 +269,22 @@ Run:
 ```powershell
 python .\09_PROJECT_OS\TOOLS\verify_task_state.py --self-test
 python .\09_PROJECT_OS\TOOLS\verify_task_state.py --graph .\09_PROJECT_OS\SCHEMA\WP001_dependency_graph.json
+python .\09_PROJECT_OS\TOOLS\verify_task_state.py .\09_PROJECT_OS\STATE\WP001-SCHEMA.json --graph .\09_PROJECT_OS\SCHEMA\WP001_dependency_graph.json --repo-root . --previous-state <path-when-resuming>
 ```
 
 Required test outcomes:
 
+- I1: `READ=PASS` plus assigned-writer `WRITE=FAIL_403` cannot become PUBLISHED.
 - T2: closing after PRODUCED/PUBLISHED without ACK/verification is rejected.
 - T4: overlapping HOME/SCHOOL ACTIVE leases are rejected.
+- T4: a self-consistent but historically expired ACTIVE lease is rejected by
+  the live wall clock.
 - T7: one Critical UNKNOWN/BLOCK makes the effective Gate BLOCK.
 - T8: restart with matching durable evidence resumes idempotently; missing or
   changed evidence blocks.
+
+The record command performs a live `git ls-remote`, proves the artifact commit is
+an ancestor of current remote main, extracts committed bytes with `git show`, and
+compares their SHA-256. A syntactically plausible commit or hash is insufficient.
+`--as-of <timestamp>` is forensic replay only: its output is explicitly marked
+HISTORICAL and can never produce a live VERIFIED/CLOSED Gate result.
