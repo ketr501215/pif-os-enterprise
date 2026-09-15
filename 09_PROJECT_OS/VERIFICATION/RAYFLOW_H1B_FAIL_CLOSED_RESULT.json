@@ -1,0 +1,80 @@
+{
+  "schema_version": "rayflow.effectiveness-result/v0.1",
+  "case_id": "RAYFLOW-H1B-FAIL-CLOSED-20260915",
+  "generated_at": "2026-09-15T19:01:41+08:00",
+  "evaluation_mode": "LIVE_LOCAL_BYTE_READBACK",
+  "planner_builder": "Codex",
+  "independent_methods": [
+    {
+      "role": "VERIFIER",
+      "identity": "Claude Code",
+      "method": "recipient-side physical SHA-256 recomputation and independent wall-clock calculation",
+      "evidence": "_governance/agent_mailbox/CLAUDE_ACK_CODEX_H2_WINDOW_HOLD_20260915.md",
+      "scope": "H1B HOLD decision only; local-only and not a full RayFlow acceptance"
+    },
+    {
+      "role": "ADVERSARY",
+      "identity": "Codex independent adversary subagent",
+      "method": "fresh byte hashing, lease-event inspection, absence checks, and false-PASS analysis",
+      "scope": "T2/T4/T7/T8 acceptance sufficiency"
+    }
+  ],
+  "observed_hashes": {
+    "original_handoff": "DBF34B2E37223D136D222D549D6F8A3F8702EB7124EF51F0F18C0984AF3C905A",
+    "reissue_notice": "E8226F3C449D442F5F8DDED583042DB48FE9676451C4EBE7CA6CAF3C56FF84BE",
+    "authority": "708A771136BAAEE8C93BE74B30AA5D3A6D143933F1CBA960F157B196EA3BD3F2",
+    "codex_result": "2B2499E6C4BE8CA4C8D4A9F0292CE69DA0F90D8ADE484289B2900CBD1B770566",
+    "claude_ack": "8D0F4806ED593B0292B12DDA1439405469BEBFBDE3E1D6CF75445A9CD49E22CB"
+  },
+  "window_comparison": {
+    "decision_at": "2026-09-15T18:48:17+08:00",
+    "valid_until": "2026-09-15T19:47:00+08:00",
+    "observed_remaining_seconds": 3523,
+    "safe_complete_budget_seconds": 5400,
+    "insufficient": true
+  },
+  "test_results": {
+    "T2_WRITE_NOT_DELIVERY": {
+      "verdict": "PASS",
+      "scope": "NARROW_NEGATIVE_PATH",
+      "evidence": "The Codex result and Claude ACK are local-only; neither file existence nor ACK text advanced the task beyond PERSISTED."
+    },
+    "T4_LEASE_ADMISSION": {
+      "verdict": "PASS",
+      "scope": "UNKNOWN_DENIES_ADMISSION",
+      "evidence": "The sandbox lease observation was UNKNOWN and the executor performed zero lease acquisitions and zero H2 operations."
+    },
+    "T4_SCHOOL_HOME_DOUBLE_EXECUTION": {
+      "verdict": "UNKNOWN",
+      "scope": "NOT_EXERCISED",
+      "evidence_gap": "No concurrent HOME/SCHOOL acquisition trace or exact-ID release receipt was supplied."
+    },
+    "T7_SINGLE_CRITICAL_ALARM": {
+      "verdict": "DEGRADED",
+      "scope": "BEHAVIORAL_PASS_MACHINE_RECORD_ABSENT",
+      "evidence": "One hard insufficient-window condition stopped admission despite otherwise positive authority and hash evidence.",
+      "evidence_gap": "The event was not encoded as a RayFlow gate.alarms[] item with severity CRITICAL."
+    },
+    "T8_RESTART_COMPACTION_RECOVERY": {
+      "verdict": "UNKNOWN",
+      "scope": "NOT_EXERCISED",
+      "evidence_gap": "No idempotency key, previous attempt/snapshot SHA, context digest, or last-durable-state recovery chain exists for this event."
+    }
+  },
+  "aggregate": {
+    "safe_decision_effectiveness": "PASS",
+    "full_protocol_suite": "BLOCK",
+    "h2_task_gate": "BLOCK",
+    "highest_h2_delivery_state": "PERSISTED",
+    "closed": false
+  },
+  "not_closed_reasons": [
+    "T4_SCHOOL_HOME_DOUBLE_EXECUTION_UNKNOWN",
+    "T7_MACHINE_READABLE_CRITICAL_ALARM_ABSENT",
+    "T8_RESTART_CONTEXT_CHAIN_UNKNOWN",
+    "CODEX_RESULT_AND_CLAUDE_ACK_LOCAL_ONLY",
+    "H2_BOOT_P05_CHECKOUT_SHUTDOWNSYNC_DEPARTURE_NOT_EXECUTED",
+    "RAY_FINAL_ACCEPTANCE_ABSENT"
+  ],
+  "interpretation": "RayFlow correctly produced a safe refusal in this real event. That is evidence of fail-closed behavior, not evidence that H2 or the complete RayFlow protocol has passed."
+}

@@ -1,0 +1,72 @@
+{
+  "schema_version": "rayflow.effectiveness-case/v0.1",
+  "case_id": "RAYFLOW-H1B-FAIL-CLOSED-20260915",
+  "task_id": "SEQ45-H2-HOME-RECOVERY",
+  "purpose": "Use the real H1B HOLD_NOT_STARTED result to test RayFlow without creating a demo.",
+  "evidence_root_policy": "Runtime input only. Raw governance artifacts are not copied into the public repository.",
+  "evidence": {
+    "original_handoff": {
+      "path": "_governance/agent_mailbox/CLAUDE_HOME_TO_CODEX_20260915_H1_AUTHORITY_ISSUED_EXECUTE_H2.md",
+      "sha256": "DBF34B2E37223D136D222D549D6F8A3F8702EB7124EF51F0F18C0984AF3C905A"
+    },
+    "reissue_notice": {
+      "path": "_governance/agent_mailbox/CLAUDE_HOME_TO_CODEX_20260915_H1_WINDOW_REISSUED_SUPERSEDES_H1.md",
+      "sha256": "E8226F3C449D442F5F8DDED583042DB48FE9676451C4EBE7CA6CAF3C56FF84BE"
+    },
+    "authority": {
+      "path": "_governance/authorized_oneoff/RAY_SEQ45_H1B_HOME_RECOVERY_WINDOW_AUTHORITY_20260915.json",
+      "sha256": "708A771136BAAEE8C93BE74B30AA5D3A6D143933F1CBA960F157B196EA3BD3F2"
+    },
+    "codex_result": {
+      "path": "_governance/agent_mailbox/HOME_CLAUDE_TO_CODEX_SCHOOL_20260915_SEQ45_ADJUDICATION_AND_DEPARTURE_RESULT.md",
+      "sha256": "2B2499E6C4BE8CA4C8D4A9F0292CE69DA0F90D8ADE484289B2900CBD1B770566"
+    },
+    "claude_ack": {
+      "path": "_governance/agent_mailbox/CLAUDE_ACK_CODEX_H2_WINDOW_HOLD_20260915.md",
+      "sha256": "8D0F4806ED593B0292B12DDA1439405469BEBFBDE3E1D6CF75445A9CD49E22CB"
+    }
+  },
+  "expected": {
+    "authority_id": "2623beef-b274-4ab5-86cb-89940419e739",
+    "superseded_authority_id": "edf598a8-37b7-4508-8385-74e5a511379f",
+    "executor_agent": "CODEX:HOME:INCREMENTAL_BOOT:01a08a5d",
+    "valid_from": "2026-09-15T18:17:00+08:00",
+    "valid_until": "2026-09-15T19:47:00+08:00",
+    "decision_at": "2026-09-15T18:48:17+08:00",
+    "safe_complete_budget_seconds": 5400,
+    "remaining_seconds_at_decision": 3523,
+    "decision": "HOLD_NOT_STARTED_INSUFFICIENT_REMAINING_WINDOW",
+    "task_gate": "BLOCK",
+    "highest_delivery_state": "PERSISTED",
+    "closed": false
+  },
+  "tests": {
+    "T2_WRITE_NOT_DELIVERY": {
+      "expected": "A local result and local recipient ACK must not advance to PUBLISHED, ACKED, VERIFIED, or CLOSED."
+    },
+    "T4_LEASE_ADMISSION": {
+      "expected": "UNKNOWN live lease evidence must deny admission and produce zero lifecycle execution."
+    },
+    "T4_SCHOOL_HOME_DOUBLE_EXECUTION": {
+      "expected": "Report NOT_EXERCISED unless an actual overlapping HOME/SCHOOL acquisition trace is supplied."
+    },
+    "T7_SINGLE_CRITICAL_ALARM": {
+      "expected": "One Critical insufficient-window alarm forces BLOCK; Claude concurrence is corroboration, not a vote."
+    },
+    "T8_RESTART_COMPACTION_RECOVERY": {
+      "expected": "A stateless verifier must reconstruct the decision from canonical bytes and hashes without trusting chat context."
+    }
+  },
+  "expected_aggregate": {
+    "safe_decision_effectiveness": "PASS",
+    "full_protocol_suite": "BLOCK",
+    "not_closed_reasons": [
+      "T4_SCHOOL_HOME_DOUBLE_EXECUTION_UNKNOWN",
+      "T7_MACHINE_READABLE_CRITICAL_ALARM_ABSENT",
+      "T8_RESTART_CONTEXT_CHAIN_UNKNOWN",
+      "RESULT_AND_ACK_LOCAL_ONLY_NOT_DELIVERED"
+    ],
+    "task_gate": "BLOCK",
+    "closed": false
+  }
+}
