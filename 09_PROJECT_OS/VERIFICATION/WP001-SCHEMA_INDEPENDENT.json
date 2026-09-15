@@ -1,0 +1,257 @@
+{
+  "schema_version": "rayflow.independent-verification/v0.1",
+  "verification_id": "WP001-SCHEMA-INDEPENDENT-20260915T103324Z",
+  "generated_at": "2026-09-15T10:33:24.0738883Z",
+  "verifier": {
+    "identity": "Codex independent adversary subagent",
+    "agent_id": "wp001_adversary",
+    "vendor": "OpenAI",
+    "role": "ADVERSARY",
+    "independent_of_builder": true,
+    "method_independence": "Runtime reproduction, native PowerShell JSON Schema validation, adversarial in-memory mutations, live remote ref observation, and exact Git object/hash verification; no reliance on builder-authored PASS text."
+  },
+  "scope": {
+    "repository": "https://github.com/ketr501215/pif-os-enterprise.git",
+    "branch": "main",
+    "work_package_id": "WP001",
+    "task_id": "WP001-SCHEMA",
+    "artifact_path": "04_KNOWLEDGE_OS/SCHEMA_v0.1.md",
+    "artifact_commit": "6a268371c9825325df63a9f55a4a49effb38ecd9",
+    "ack_commit": "c0e1723df205695bf0c4737ec5ba4d20489fbdab",
+    "verification_target": "Published WP001-SCHEMA artifact and its R3 Claude recipient ACK; parent WP001 closure is evaluated separately."
+  },
+  "artifact_proof": {
+    "expected_content_sha256": "3F6907289A2D3AC8882A4B84167E9D90C15D7C5A4BD94E690B49FC6B9BE526FC",
+    "observed_content_sha256_from_committed_bytes": "3F6907289A2D3AC8882A4B84167E9D90C15D7C5A4BD94E690B49FC6B9BE526FC",
+    "observed_content_sha256_from_worktree_readback": "3F6907289A2D3AC8882A4B84167E9D90C15D7C5A4BD94E690B49FC6B9BE526FC",
+    "git_blob_oid": "b9eca41c9e69800a7741528d2b922daf9123179e",
+    "byte_length": 12758,
+    "git_object_type": "commit",
+    "artifact_commit_parent": "2ff6291b55deedf4f8611742d2f4fe3f1d5e2d73",
+    "artifact_commit_tree": "a9382c735f2a213c5551b013046675829c27e077",
+    "live_remote_main_at_final_verification": "c0e1723df205695bf0c4737ec5ba4d20489fbdab",
+    "artifact_commit_is_ancestor_of_live_remote_main": true,
+    "artifact_bytes_unchanged_in_ack_commit_tree": true,
+    "expected_equals_observed": true,
+    "verdict": "PASS"
+  },
+  "ack_proof": {
+    "r2": {
+      "path": "09_PROJECT_OS/ACK/WP001-SCHEMA_CLAUDE_ACK_R2.json",
+      "commit": "c0e1723df205695bf0c4737ec5ba4d20489fbdab",
+      "git_blob_oid": "767509a80d1ce234d4c31ab1f75fe288dba6b105",
+      "content_sha256": "34D4052551B6595F3B871C2F5A7F4BBF5FBA1FD64009160E8A0A8EFD09A3590C",
+      "ack": "UNKNOWN",
+      "reason": "Claude had not completed a live remote observation. This fail-closed record is preserved and is not treated as ACKED."
+    },
+    "r3": {
+      "path": "09_PROJECT_OS/ACK/WP001-SCHEMA_CLAUDE_ACK_R3.json",
+      "commit": "c0e1723df205695bf0c4737ec5ba4d20489fbdab",
+      "git_blob_oid": "d08825f5b833deb5d88c060b27e46bdad3effde7",
+      "byte_length": 5944,
+      "content_sha256": "791C54A6D766220EB83FB69C075E3B250F54A269156F2BFB1646F6BAD4BA71E5",
+      "observer": "Claude Code (claude-opus-4-7[1m])",
+      "observer_session": "fresh-context R3 verification for WP001-SCHEMA",
+      "expected_commit": "6a268371c9825325df63a9f55a4a49effb38ecd9",
+      "observed_commit": "6a268371c9825325df63a9f55a4a49effb38ecd9",
+      "observed_live_remote_tip": "6a268371c9825325df63a9f55a4a49effb38ecd9",
+      "expected_content_sha256": "3F6907289A2D3AC8882A4B84167E9D90C15D7C5A4BD94E690B49FC6B9BE526FC",
+      "observed_content_sha256": "3F6907289A2D3AC8882A4B84167E9D90C15D7C5A4BD94E690B49FC6B9BE526FC",
+      "live_ls_remote_performed": true,
+      "observer_is_not_builder": true,
+      "ack": "YES",
+      "mismatch_reasons": [],
+      "exact_comparison_pass": true,
+      "verdict": "PASS"
+    },
+    "evolution_rule": "R2 UNKNOWN remains immutable evidence. R3 is a later ACK bound to the same exact artifact commit and bytes; it does not rewrite R2.",
+    "verdict": "PASS"
+  },
+  "commands_and_observations": [
+    {
+      "id": "C1_LIVE_REMOTE",
+      "method": "ARTIFACT_HASH",
+      "command": "git ls-remote https://github.com/ketr501215/pif-os-enterprise.git refs/heads/main",
+      "exit_code": 0,
+      "observation": "c0e1723df205695bf0c4737ec5ba4d20489fbdab refs/heads/main",
+      "interpretation": "Independent live READ proves the ACK commit is published on current remote main."
+    },
+    {
+      "id": "C2_ARTIFACT_OBJECT",
+      "method": "ARTIFACT_HASH",
+      "command": "git cat-file -t 6a268371c9825325df63a9f55a4a49effb38ecd9; git ls-tree 6a268371c9825325df63a9f55a4a49effb38ecd9 -- 04_KNOWLEDGE_OS/SCHEMA_v0.1.md",
+      "exit_code": 0,
+      "observation": "commit; 100644 blob b9eca41c9e69800a7741528d2b922daf9123179e 04_KNOWLEDGE_OS/SCHEMA_v0.1.md"
+    },
+    {
+      "id": "C3_ARTIFACT_ANCESTRY",
+      "method": "ARTIFACT_HASH",
+      "command": "git merge-base --is-ancestor 6a268371c9825325df63a9f55a4a49effb38ecd9 c0e1723df205695bf0c4737ec5ba4d20489fbdab",
+      "exit_code": 0,
+      "observation": "Artifact commit is an ancestor of the current live remote main commit."
+    },
+    {
+      "id": "C4_COMMITTED_BYTE_HASH",
+      "method": "ARTIFACT_HASH",
+      "command": "bundled-python -c \"b=subprocess.check_output(['git','show','6a268371c9825325df63a9f55a4a49effb38ecd9:04_KNOWLEDGE_OS/SCHEMA_v0.1.md']); print(len(b)); print(hashlib.sha256(b).hexdigest().upper())\"",
+      "exit_code": 0,
+      "observation": "BYTE_LENGTH=12758; SHA256=3F6907289A2D3AC8882A4B84167E9D90C15D7C5A4BD94E690B49FC6B9BE526FC"
+    },
+    {
+      "id": "C5_OFFICIAL_RUNTIME",
+      "method": "RUNTIME_REPRODUCTION",
+      "command": "C:\\Users\\ray\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe .\\09_PROJECT_OS\\TOOLS\\verify_task_state.py --self-test",
+      "exit_code": 0,
+      "observation": "All 15 emitted checks PASS: SCHEMA_RUNTIME_VALIDATION; I1 READ/WRITE split, claimed 403 PASS rejection, stale capability rejection; T2 write-not-delivery and self-ACK; T4 dual-site, active lease, expired lease; T7 Critical and noncritical block behavior; T8 history, graph binding, and recovery."
+    },
+    {
+      "id": "C6_GRAPH_RUNTIME",
+      "method": "SCHEMA_VALIDATION",
+      "command": "C:\\Users\\ray\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe .\\09_PROJECT_OS\\TOOLS\\verify_task_state.py --graph .\\09_PROJECT_OS\\SCHEMA\\WP001_dependency_graph.json",
+      "exit_code": 0,
+      "observation": "GRAPH: PASS"
+    },
+    {
+      "id": "C7_NATIVE_SCHEMA_POSITIVE_NEGATIVE",
+      "method": "SCHEMA_VALIDATION",
+      "command": "PowerShell Test-Json -SchemaFile .\\09_PROJECT_OS\\SCHEMA\\task-state-v0.1.schema.json against base_record JSON, then against the same record with delivery.ack removed",
+      "exit_code": 0,
+      "observation": "POWERSHELL_SCHEMA_VALID_BASE=True; POWERSHELL_SCHEMA_REJECTS_MISSING_ACK=True; negative error: Required properties [ack] are not present at /delivery"
+    },
+    {
+      "id": "C8_R3_COMMITTED_READBACK",
+      "method": "ARTIFACT_HASH",
+      "command": "git show c0e1723df205695bf0c4737ec5ba4d20489fbdab:09_PROJECT_OS/ACK/WP001-SCHEMA_CLAUDE_ACK_R3.json; parse JSON and compare expected/observed commit and SHA to committed artifact bytes",
+      "exit_code": 0,
+      "observation": "ACK=YES; LIVE_PERFORMED=True; EXPECTED_COMMIT=OBSERVED_COMMIT=6a268371c9825325df63a9f55a4a49effb38ecd9; EXPECTED_SHA=OBSERVED_SHA=committed-byte SHA; ACK_COMPARISON_OK=True"
+    },
+    {
+      "id": "C9_INDEPENDENT_MUTATIONS",
+      "method": "ADVERSARIAL_TEST",
+      "command": "bundled-python in-memory mutation harness importing 09_PROJECT_OS/TOOLS/verify_task_state.py and exercising the test vectors recorded below; no test artifact files written",
+      "exit_code": 0,
+      "observation": "all_pass=true for 10 independent mutation assertions"
+    }
+  ],
+  "acceptance_tests": {
+    "I1_ACTOR_SCOPED_GITHUB_CAPABILITY": {
+      "verdict": "PASS",
+      "method": "Derived verdict plus scope mutation",
+      "positive_or_negative_vectors": [
+        "READ SUCCESS combined with same-scope PUSH DENIED/403 yields E_PUBLISHED_WITHOUT_WRITER_CAPABILITY.",
+        "A capability falsely declaring verdict PASS while observed_outcome=DENIED and result_code=403 yields E_CAPABILITY_VERDICT_MISMATCH and blocks publication.",
+        "Changing any one of actor_id, credential_ref, machine_id, site, repository, ref, or operation prevents that capability from authorizing PUBLISHED.",
+        "A success observation older than 24 hours becomes UNKNOWN and cannot authorize publication."
+      ]
+    },
+    "T2_WRITE_NOT_DELIVERY": {
+      "verdict": "PASS",
+      "method": "State invariant mutation plus exact ACK/hash readback",
+      "positive_or_negative_vectors": [
+        "CLOSED without matching observed commit, ACK YES, independent verification PASS, and Ray acceptance is rejected.",
+        "observer_agent_id equal to builder agent_id yields E_SELF_ACK_FORBIDDEN.",
+        "A valid-format but different observed SHA yields E_OBSERVED_CONTENT_MISMATCH.",
+        "Published artifact bytes, R3 recipient ACK bytes, and independent verification are separate evidence objects."
+      ]
+    },
+    "T4_SCHOOL_HOME_DOUBLE_EXECUTION": {
+      "verdict": "PASS",
+      "method": "Peer lease mutation and live-clock validation",
+      "positive_or_negative_vectors": [
+        "Concurrent HOME and SCHOOL ACTIVE leases for case-equivalent canonical resource repo:wp001 yield E_DOUBLE_ACTIVE_LEASE:repo:wp001.",
+        "RUNNING without ACTIVE lease yields E_WRITE_STATE_WITHOUT_ACTIVE_LEASE and binding/time errors.",
+        "A historically self-consistent but live-expired ACTIVE lease yields E_ACTIVE_LEASE_NOT_CURRENT.",
+        "Positive control RUNNING with actor-bound fresh ACTIVE lease passes; PUBLISHED with RELEASED lease passes."
+      ]
+    },
+    "T7_SINGLE_CRITICAL_ALARM": {
+      "verdict": "PASS",
+      "method": "Adversarial gate composition",
+      "positive_or_negative_vectors": [
+        "One CRITICAL UNKNOWN plus two PASS alarms computes BLOCK; the Critical alarm is not outvoted.",
+        "CRITICAL DEGRADED computes BLOCK.",
+        "Any alarm verdict BLOCK computes BLOCK, including NONCRITICAL BLOCK.",
+        "A claimed computed verdict inconsistent with recomputation yields E_GATE_COMPUTATION_MISMATCH."
+      ]
+    },
+    "T8_RESTART_CONTEXT_COMPACTION_RECOVERY": {
+      "verdict": "PASS",
+      "method": "Previous-snapshot byte binding and adversarial history/context mutation",
+      "positive_or_negative_vectors": [
+        "Empty history and a first-event jump are rejected.",
+        "A recomputed previous_snapshot_sha cannot hide an invalid previous state because the previous record is independently schema/invariant validated.",
+        "Changing current and claimed previous idempotency keys together is rejected by deterministic idempotency recomputation and previous-record comparison.",
+        "Changed artifact SHA, missing context, or changed context bytes is rejected.",
+        "Historical --as-of evaluation cannot satisfy a live VERIFIED/CLOSED gate."
+      ]
+    }
+  },
+  "implementation_artifact_hashes": {
+    "09_PROJECT_OS/TOOLS/verify_task_state.py": "38CFE3D836E07289A4D1A2D4113C68F168AC0C79C780946321C090B40F244DB4",
+    "09_PROJECT_OS/SCHEMA/task-state-v0.1.schema.json": "8265FA2E7CB298ACE74061B1D4942B04162F8AD6B680CAF7D669350E68D78681",
+    "09_PROJECT_OS/SCHEMA/WP001_dependency_graph.json": "67FAFE1F6809D63A30B60D60B41A5904D6BAEBF62FC0CCABDFA482BB6D655AF0"
+  },
+  "github_capability_observations": [
+    {
+      "actor_scope": "wp001_adversary verification process",
+      "operation": "READ",
+      "repository": "https://github.com/ketr501215/pif-os-enterprise.git",
+      "ref": "refs/heads/main",
+      "live_observation": "git ls-remote succeeded and returned c0e1723df205695bf0c4737ec5ba4d20489fbdab",
+      "verdict": "PASS"
+    },
+    {
+      "actor_scope": "Out of verification scope",
+      "operation": "CREATE_ISSUE",
+      "independent_reproduction_performed": false,
+      "independent_verdict": "UNKNOWN",
+      "note": "CREATE_ISSUE capability: UNKNOWN / not independently tested in this verification scope. Do not infer it from READ capability."
+    }
+  ],
+  "completion_proof_assessment": {
+    "artifact_publication": "PASS",
+    "recipient_ack": "PASS via immutable R3; R2 UNKNOWN preserved",
+    "independent_verification": "PASS for WP001-SCHEMA artifact implementation",
+    "parent_gate": "BLOCK",
+    "ray_acceptance": "ABSENT",
+    "parent_completion_proof_complete": false,
+    "not_closed_reasons": [
+      "Claude WP001 Gate review remains BLOCK because the Constitution v1.2 mailbox mandate conflicts with the subordinate simplified workflow rule.",
+      "Ray final acceptance is absent.",
+      "This independent report is local-only and has not itself been committed, published, observed, or ACKed."
+    ]
+  },
+  "critical_findings": [
+    {
+      "finding_id": "PARENT-WP001-GOVERNANCE-CONFLICT",
+      "scope": "parent WP001",
+      "severity": "CRITICAL",
+      "verdict": "BLOCK",
+      "evidence_ref": "09_PROJECT_OS/REVIEW/WP001_REVIEW.md",
+      "description": "The higher-authority Constitution v1.2 mailbox rule conflicts with the simplified no-inbox/outbox workflow. This cannot be cleared by artifact test votes."
+    }
+  ],
+  "limitations": [
+    "No GitHub CREATE_ISSUE or other external write was attempted by this verifier; CREATE_ISSUE capability remains UNKNOWN for this verification scope.",
+    "No final Ray acceptance or parent WP001 Completion Proof exists in the verified evidence set.",
+    "The verifier's merge-base diagnostic does not distinguish a missing commit from a non-ancestor commit, but both outcomes fail closed.",
+    "The independent mutation harness used in-memory records; no separate temporary test files were persisted.",
+    "This report is intentionally not committed or pushed by this verifier, so its own delivery state cannot exceed PERSISTED."
+  ],
+  "artifact_verdict": "PASS",
+  "artifact_state": "VERIFIED",
+  "overall_scope": "WP001 end-to-end closure including parent gate and Ray acceptance",
+  "overall": "BLOCK",
+  "parent_wp001_gate": "BLOCK",
+  "wp001_closed": false,
+  "ray_acceptance_present": false,
+  "report_delivery": {
+    "current_state": "PERSISTED",
+    "published": false,
+    "observed": false,
+    "acked": false,
+    "verified": false,
+    "closed": false,
+    "note": "Creating this file is not delivery. A later publisher must commit/push it and perform live readback before any downstream consumer may treat the report as delivered."
+  }
+}
