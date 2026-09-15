@@ -1,5 +1,5 @@
 ﻿# PIF OS — AGENT RULES（Agent 工作守則）
-> **版本**：v0.1 | **生效日**：2026-06-25 | **制定者**：Ray（Product Owner）
+> **版本**：v0.2 | **生效日**：2026-09-15 | **制定者**：Ray（Product Owner）
 >
 > 所有 Agent（Claude Code、Codex、ChatGPT、Gemini CLI、Antigravity）
 > 必須遵守本守則。本守則優先於任何 Agent 的預設行為。
@@ -315,3 +315,48 @@ Claude 看到後即可知道下一步輪到自己。
 3. Review 寫進 `09_PROJECT_OS/REVIEW/`，不寫信。
 4. 決策只寫進 `09_PROJECT_OS/DECISION_LOG.md`。
 5. `00_POCC` 保留歷史文件與控制中心，不再作為新 mailbox 擴張區。
+
+---
+
+## 第十四條｜RayFlow 角色機械閘（2026-09-15 Ray 拍板）
+
+所有 Agent，包括 Ray、Lead Agent、Subagent、Claude Code、Codex、Gemini
+CLI、Antigravity CLI 與後續 Agent，均須遵守：
+
+1. 每個 task attempt 必須宣告一個角色：`HUMAN / LEAD / ORCHESTRATOR /
+   PLANNER / BUILDER / VERIFIER / ADVERSARY`。廠商或模型名稱不等於角色，
+   也不構成獨立性證據。
+2. 每次狀態轉移前，執行該角色與轉移所要求的機械閘，輸出
+   `rayflow.gate-run/v0.1` 紀錄，並由 verifier 重算結果。
+3. 機械閘一律使用 `expected state → live observation → comparison →
+   verdict`；Agent 自寫 `PASS` 不具通行效力。
+4. `CREATED → DISPATCHED → ACCEPTED → RUNNING → PRODUCED → PERSISTED →
+   PUBLISHED → OBSERVED → ACKED → VERIFIED → CLOSED` 不得跳級或由檔案存在
+   推定。
+5. Builder 不得對自己的產物執行 OBSERVED、ACKED、VERIFIED 或 CLOSED。
+   Verifier／Adversary 必須具不同 agent、credential、session provenance，
+   並使用不同檢驗方法。
+6. 任一 Critical `BLOCK / UNKNOWN / DEGRADED` 均使 effective Gate=`BLOCK`；
+   Alarm 不是投票，不得以多數 PASS 抵銷。
+7. write-period state 必須有唯一有效 lease、fencing token 與 heartbeat；
+   HOME／SCHOOL 雙重 ACTIVE lease 一律 BLOCK。
+8. restart/context compaction 必須重讀 canonical state、驗前次 snapshot／
+   artifact／context SHA、重算 idempotency key 並重新證明 lease。摘要不得
+   解除 HOLD 或推進狀態。
+9. `CLOSED` 必須有完整 Completion Proof、依賴完成、lease release、獨立
+   verification，以及工作包要求的 Ray acceptance。
+
+角色與 gate 的規範性對照表位於：
+
+- `08_AGENT_OS/RAYFLOW_ROLE_GATE_RULES_v0.1.md`
+- `09_PROJECT_OS/SCHEMA/rayflow-role-gates-v0.1.json`
+- `09_PROJECT_OS/SCHEMA/rayflow-gate-run-v0.1.schema.json`
+- `09_PROJECT_OS/SCHEMA/rayflow-role-assignment-v0.1.schema.json`
+- `09_PROJECT_OS/TOOLS/verify_role_gates.py`
+- `09_PROJECT_OS/TOOLS/Invoke-RoleGate.ps1`
+
+所有 Agent 開工前必須執行 `Invoke-RoleGate.ps1 -SelfTest`。驗證器失敗、
+無法執行或證據缺失均為 `UNKNOWN`；Critical 工作因此必須 `BLOCK`。
+
+本條不自行解除 Constitution Article 6 與本守則 Article 13 的既有通訊規則
+衝突，也不使 WP001 自動通過或 CLOSED。

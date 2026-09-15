@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pif-os.example/schema/rayflow-role-assignment-v0.1.json",
+  "title": "RayFlow Role Assignment v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "task_id", "attempt_id", "requirement_revision", "idempotency_key", "assignee", "assigned_role", "assigned_by", "scope", "authority_evidence", "issued_at"],
+  "properties": {
+    "schema_version": {"const": "rayflow.role-assignment/v0.1"},
+    "task_id": {"type": "string", "minLength": 3},
+    "attempt_id": {"type": "string", "minLength": 1},
+    "requirement_revision": {"type": "string", "minLength": 1},
+    "idempotency_key": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "assignee": {"$ref": "#/$defs/identity"},
+    "assigned_role": {"enum": ["HUMAN", "LEAD", "ORCHESTRATOR", "PLANNER", "BUILDER", "VERIFIER", "ADVERSARY"]},
+    "assigned_by": {"$ref": "#/$defs/identity"},
+    "scope": {"type": "string", "minLength": 1},
+    "authority_evidence": {"$ref": "#/$defs/evidence"},
+    "issued_at": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[A-Fa-f0-9]{64}$"},
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["agent_id", "role", "vendor", "credential_ref", "session_id", "machine_id", "site"],
+      "properties": {
+        "agent_id": {"type": "string", "minLength": 1},
+        "role": {"enum": ["HUMAN", "LEAD", "ORCHESTRATOR", "PLANNER", "BUILDER", "VERIFIER", "ADVERSARY"]},
+        "vendor": {"type": "string", "minLength": 1},
+        "credential_ref": {"type": "string", "minLength": 1},
+        "session_id": {"type": "string", "minLength": 1},
+        "machine_id": {"type": "string", "minLength": 1},
+        "site": {"enum": ["HOME", "SCHOOL", "CLOUD", "OTHER"]}
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "sha256", "method"],
+      "properties": {
+        "ref": {"type": "string", "pattern": "^(?!/)(?!.*\\.\\./).+"},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "method": {"enum": ["USER_SESSION_AUTHORITY_RECEIPT", "SIGNED_COMMIT", "EXTERNAL_ATTESTATION", "RAY_DECISION_RECORD"]}
+      }
+    }
+  }
+}

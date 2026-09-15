@@ -65,3 +65,13 @@ Date: 2026-06-25
 Decision: Agent 之間不寫信，不維護 inbox/outbox。每位 Agent 僅維護 `08_AGENT_OS/[Agent]/STATUS.md` 與 `DAILY_YYYYMMDD.md`；共用工作包、Review、Decision 集中於 `09_PROJECT_OS/WORK_PACKAGE/`、`09_PROJECT_OS/REVIEW/`、`09_PROJECT_OS/DECISION_LOG.md`。
 Reason: 降低檔案數、降低 Git 衝突、避免 mailbox 擴張成第二套任務系統。
 Owner: Ray 拍板 | Codex 落地 | 寫入 AGENT_RULES.md 第十三條
+
+## D010 - RayFlow 全 Agent 角色機械閘
+
+Date: 2026-09-15
+Decision: 所有 Agent 每個 task attempt 必須宣告角色，並在每次狀態轉移前執行角色與轉移對應的 machine-readable gate。只有機械重算為 PASS 才能前進；Agent 自寫 PASS、檔案存在、多數票或模型名稱均不構成通行證據。
+Ray authority quote: `請您把 RayFlow Multi-Agent Orchestration Protocol 中每位agent 角色該執行機械閘功能，納入工作規則中，要求所有agent 遵守`
+Scope: Ray、Lead Agent、Subagent、Claude Code、Codex、Gemini CLI、Antigravity CLI 與後續 Agent。
+Implementation: repository `AGENTS.md`; `00_POCC/AGENT_RULES.md` Article 14; `08_AGENT_OS/RAYFLOW_ROLE_GATE_RULES_v0.1.md`; machine policy/schema/verifier under `09_PROJECT_OS/`.
+Non-implication: 本決策不解除 Constitution Article 6 與 AGENT_RULES Article 13 的既有衝突，不自動啟用 WP001 全部候選規範，也不使 WP001 CLOSED。
+Owner: Ray 拍板 | Codex implementation | independent review pending

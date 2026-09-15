@@ -1,0 +1,114 @@
+{
+  "schema_version": "rayflow.role-gates/v0.1",
+  "policy_id": "RAYFLOW-ROLE-GATES-001",
+  "status": "ACTIVE",
+  "authority": {
+    "decision_ref": "09_PROJECT_OS/DECISION_LOG.md#D010",
+    "authorized_by": "Ray",
+    "user_quote": "請您把 RayFlow Multi-Agent Orchestration Protocol 中每位agent 角色該執行機械閘功能，納入工作規則中，要求所有agent 遵守"
+  },
+  "state_order": [
+    "CREATED",
+    "DISPATCHED",
+    "ACCEPTED",
+    "RUNNING",
+    "PRODUCED",
+    "PERSISTED",
+    "PUBLISHED",
+    "OBSERVED",
+    "ACKED",
+    "VERIFIED",
+    "CLOSED"
+  ],
+  "roles": {
+    "HUMAN": {
+      "gate_catalog": ["HUMAN_AUTHORITY", "RISK_ACCEPTANCE_EXPLICIT", "FINAL_ACCEPTANCE", "COMPLETION_PROOF", "DEPENDENCY_SATISFIED", "LEASE_RELEASED"]
+    },
+    "LEAD": {
+      "gate_catalog": ["TASK_IDENTITY", "DEPENDENCY_GRAPH", "ROLE_SEPARATION", "CAPABILITY_ROUTE", "GATE_AGGREGATION"]
+    },
+    "ORCHESTRATOR": {
+      "gate_catalog": ["TASK_IDENTITY", "DEPENDENCY_GRAPH", "ROLE_SEPARATION", "CAPABILITY_ROUTE", "GATE_AGGREGATION", "STATE_TRANSITION", "IDEMPOTENCY_DEDUP", "LEASE_ROUTE", "RECOVERY_RELOAD"]
+    },
+    "PLANNER": {
+      "gate_catalog": ["REQUIREMENT_FREEZE", "ACCEPTANCE_CRITERIA", "DEPENDENCY_GRAPH", "EXPECTED_STATE_PRECOMMIT", "CRITICALITY_CLASSIFICATION"]
+    },
+    "BUILDER": {
+      "gate_catalog": ["BUILDER_CAPABILITY", "DEPENDENCIES_READY", "WRITE_LEASE", "ARTIFACT_HASH", "PERSIST_READBACK", "PUBLISH_READBACK", "NO_SELF_ACK"]
+    },
+    "VERIFIER": {
+      "gate_catalog": ["OBSERVER_PROVENANCE", "OBSERVE_EXACT_ARTIFACT", "ACK_COMPARISON", "VERIFIER_PROVENANCE", "METHOD_INDEPENDENCE", "ACCEPTANCE_CRITERIA_CHECK", "CRITICAL_ALARM_SCAN"]
+    },
+    "ADVERSARY": {
+      "gate_catalog": ["FALSE_PASS_INJECTION", "DOUBLE_EXECUTION_TEST", "SINGLE_CRITICAL_TEST", "RESTART_COMPACTION_TEST", "WRITE_DELIVERY_SPLIT_TEST", "ADVERSARIAL_EVIDENCE"]
+    }
+  },
+  "universal_gates": ["TASK_IDENTITY", "ROLE_BINDING", "STATE_TRANSITION"],
+  "transition_owners": {
+    "CREATED->DISPATCHED": ["LEAD", "ORCHESTRATOR"],
+    "DISPATCHED->ACCEPTED": ["LEAD", "ORCHESTRATOR", "PLANNER", "BUILDER", "VERIFIER", "ADVERSARY"],
+    "ACCEPTED->RUNNING": ["BUILDER", "ORCHESTRATOR"],
+    "RUNNING->PRODUCED": ["BUILDER"],
+    "PRODUCED->PERSISTED": ["BUILDER"],
+    "PERSISTED->PUBLISHED": ["BUILDER", "ORCHESTRATOR"],
+    "PUBLISHED->OBSERVED": ["VERIFIER"],
+    "OBSERVED->ACKED": ["VERIFIER"],
+    "ACKED->VERIFIED": ["VERIFIER"],
+    "VERIFIED->CLOSED": ["HUMAN"]
+  },
+  "transition_gates": {
+    "CREATED->DISPATCHED": ["TASK_IDENTITY", "DEPENDENCY_GRAPH", "ROLE_SEPARATION"],
+    "DISPATCHED->ACCEPTED": ["REQUIREMENT_FREEZE", "CAPABILITY_ROUTE"],
+    "ACCEPTED->RUNNING": ["DEPENDENCIES_READY", "WRITE_LEASE", "STATE_TRANSITION"],
+    "RUNNING->PRODUCED": ["ARTIFACT_HASH", "WRITE_LEASE"],
+    "PRODUCED->PERSISTED": ["PERSIST_READBACK", "WRITE_LEASE"],
+    "PERSISTED->PUBLISHED": ["PUBLISH_READBACK", "BUILDER_CAPABILITY"],
+    "PUBLISHED->OBSERVED": ["OBSERVER_PROVENANCE", "OBSERVE_EXACT_ARTIFACT"],
+    "OBSERVED->ACKED": ["ACK_COMPARISON", "VERIFIER_PROVENANCE"],
+    "ACKED->VERIFIED": ["METHOD_INDEPENDENCE", "ACCEPTANCE_CRITERIA_CHECK", "CRITICAL_ALARM_SCAN"],
+    "VERIFIED->CLOSED": ["FINAL_ACCEPTANCE", "COMPLETION_PROOF", "DEPENDENCY_SATISFIED", "LEASE_RELEASED"]
+  },
+  "independence_required_roles": ["VERIFIER", "ADVERSARY"],
+  "independence_required_transitions": ["PUBLISHED->OBSERVED", "OBSERVED->ACKED", "ACKED->VERIFIED"],
+  "identity_dimensions": ["agent_id", "credential_ref", "session_id"],
+  "instance_defaults": {
+    "Ray": {"roles": ["HUMAN"], "data_scope": "AUTHORIZED"},
+    "Lead Agent": {"roles": ["LEAD", "ORCHESTRATOR"], "data_scope": "TASK_BOUND"},
+    "Subagent": {"roles": ["PLANNER", "BUILDER", "VERIFIER", "ADVERSARY"], "data_scope": "EXPLICIT_DELEGATION_ONLY"},
+    "Claude Code": {"roles": ["BUILDER", "VERIFIER", "ADVERSARY"], "data_scope": "TASK_BOUND"},
+    "Codex": {"roles": ["BUILDER", "VERIFIER", "ADVERSARY", "ORCHESTRATOR"], "data_scope": "TASK_BOUND"},
+    "Gemini CLI": {"roles": ["PLANNER", "VERIFIER", "ADVERSARY"], "data_scope": "TASK_BOUND"},
+    "Antigravity CLI": {"roles": ["PLANNER", "BUILDER"], "data_scope": "PUBLIC_ONLY"}
+  },
+  "verdict_rules": {
+    "critical_non_pass": "BLOCK",
+    "missing_required_gate": "BLOCK",
+    "noncritical_block_or_unknown": "BLOCK",
+    "noncritical_degraded": "DEGRADED",
+    "all_pass": "PASS",
+    "votes_are_inputs": false
+  },
+  "hard_invariants": [
+    "A_WRITE_IS_NOT_A_DELIVERY",
+    "PRODUCED_NE_PUBLISHED",
+    "PUBLISHED_NE_ACKED",
+    "ACKED_NE_VERIFIED",
+    "NO_BUILDER_SELF_ACK_OR_SELF_VERIFICATION",
+    "CRITICAL_UNKNOWN_BLOCKS",
+    "ONE_ACTIVE_LEASE_PER_RESOURCE_ACROSS_SITES",
+    "CONTEXT_SUMMARY_IS_NOT_AUTHORITY",
+    "CLOSED_REQUIRES_HUMAN_ACCEPTANCE_WHEN_CONFIGURED"
+  ],
+  "role_assignment": {
+    "schema": "rayflow.role-assignment/v0.1",
+    "issuer_roles": ["HUMAN", "LEAD", "ORCHESTRATOR"],
+    "physical_sha_readback_required": true,
+    "authority_evidence_physical_sha_required": true,
+    "self_declared_role_is_sufficient": false
+  },
+  "evidence_policy": {
+    "all_gate_evidence_must_exist_under_repo_root": true,
+    "all_gate_evidence_sha_must_match": true,
+    "every_check_evidence_ref_must_be_in_evidence_inputs": true
+  }
+}

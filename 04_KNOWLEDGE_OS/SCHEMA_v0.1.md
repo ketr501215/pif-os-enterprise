@@ -18,6 +18,13 @@ The normative machine-readable shape is
 JSON Schema alone cannot express are checked by
 `09_PROJECT_OS/TOOLS/verify_task_state.py`.
 
+Ray decision D010 separately activates the all-Agent role gate rule for new
+task actions. Its normative mapping is
+`09_PROJECT_OS/SCHEMA/rayflow-role-gates-v0.1.json`; every attempted state
+transition must produce a `rayflow.gate-run/v0.1` record and pass
+`09_PROJECT_OS/TOOLS/Invoke-RoleGate.ps1`. This activation does not activate the
+remainder of this candidate schema or close WP001.
+
 This file does not amend Constitution v1.2. Claude Gate remains BLOCK until the
 higher-authority mailbox conflict is resolved and Ray accepts the change.
 
