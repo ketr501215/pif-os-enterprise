@@ -1,0 +1,99 @@
+{
+  "schema_version": "rayflow.ack/v0.1",
+  "task_id": "WP001-SCHEMA",
+  "ack_id": "WP001-SCHEMA_CLAUDE_ACK_R3",
+  "observed_at": "2026-09-15T10:30:12Z",
+  "observer": {
+    "identity": "Claude Code (claude-opus-4-7[1m])",
+    "role": "recipient-side observer (independent of builder Codex)",
+    "session": "fresh-context R3 verification for WP001-SCHEMA, follow-up to R2 UNKNOWN after read-only bypass was granted",
+    "machine_site": "HOME (Windows 10 Pro, PowerShell/Bash, workspace F:\\11-2 廠家PIF工作區\\_系統開發\\pif-os-enterprise)",
+    "prior_ack_refs": [
+      "09_PROJECT_OS/ACK/WP001-SCHEMA_CLAUDE_ACK.json (R1)",
+      "09_PROJECT_OS/ACK/WP001-SCHEMA_CLAUDE_ACK_R2.json (R2, UNKNOWN — preserved unchanged)"
+    ]
+  },
+  "expected": {
+    "repository": "https://github.com/ketr501215/pif-os-enterprise.git",
+    "branch": "main",
+    "artifact_path": "04_KNOWLEDGE_OS/SCHEMA_v0.1.md",
+    "commit": "6a268371c9825325df63a9f55a4a49effb38ecd9",
+    "content_sha256": "3f6907289a2d3ac8882a4b84167e9d90c15d7c5a4bd94e690b49fc6b9be526fc"
+  },
+  "observed": {
+    "repository": "https://github.com/ketr501215/pif-os-enterprise.git",
+    "branch_local_HEAD": "main",
+    "branch_remote_tracking_cached": "refs/remotes/origin/main -> 6a268371c9825325df63a9f55a4a49effb38ecd9",
+    "live_remote_tip": "6a268371c9825325df63a9f55a4a49effb38ecd9",
+    "live_remote_ref": "refs/heads/main",
+    "expected_commit_is_ancestor_of_live_remote_main": true,
+    "artifact_path": "04_KNOWLEDGE_OS/SCHEMA_v0.1.md",
+    "commit": "6a268371c9825325df63a9f55a4a49effb38ecd9",
+    "blob_oid": "b9eca41c9e69800a7741528d2b922daf9123179e",
+    "blob_size_bytes": 12758,
+    "content_sha256": "3f6907289a2d3ac8882a4b84167e9d90c15d7c5a4bd94e690b49fc6b9be526fc"
+  },
+  "observation_method": {
+    "steps": [
+      "git config --get remote.origin.url => https://github.com/ketr501215/pif-os-enterprise.git (matches expected repository URL exactly)",
+      "git ls-remote --heads origin refs/heads/main => LIVE remote tip observed",
+      "git ls-tree 6a268371... -- 04_KNOWLEDGE_OS/SCHEMA_v0.1.md => 100644 blob b9eca41c9e69800a7741528d2b922daf9123179e",
+      "git cat-file blob b9eca41c... | sha256sum => 3f6907289a2d3ac8882a4b84167e9d90c15d7c5a4bd94e690b49fc6b9be526fc (recomputed live, matches expected case-insensitively)",
+      "git merge-base --is-ancestor 6a268371... origin/main => ANCESTOR_YES (expected commit is on live remote main; in this case IS the tip)",
+      "Content re-read via Read tool at F:\\11-2 廠家PIF工作區\\_系統開發\\pif-os-enterprise\\04_KNOWLEDGE_OS\\SCHEMA_v0.1.md => confirmed identity as 'Knowledge OS / RayFlow Task-State Schema v0.1' authored by builder Codex"
+    ],
+    "live_ls_remote_performed": true,
+    "live_ls_remote_command": "git ls-remote --heads origin refs/heads/main",
+    "live_ls_remote_output_verbatim": "6a268371c9825325df63a9f55a4a49effb38ecd9\trefs/heads/main",
+    "ancestor_check_command": "git merge-base --is-ancestor 6a268371c9825325df63a9f55a4a49effb38ecd9 origin/main",
+    "ancestor_check_result": "ANCESTOR_YES",
+    "content_sha_recompute_command": "git cat-file blob b9eca41c9e69800a7741528d2b922daf9123179e | sha256sum",
+    "content_sha_recompute_output_verbatim": "3f6907289a2d3ac8882a4b84167e9d90c15d7c5a4bd94e690b49fc6b9be526fc *-"
+  },
+  "content_read": {
+    "confirmed_is_wp001_schema": true,
+    "title_line": "# Knowledge OS / RayFlow Task-State Schema v0.1",
+    "status_line": "Status: CANDIDATE / NOT ACTIVATED",
+    "task_line": "Task: `WP001-SCHEMA`",
+    "builder_line": "Builder: Codex",
+    "base_commit_declared_in_body": "d655ea5228cdc386298863682e4ac55139f7a4c6",
+    "date_line": "2026-09-15",
+    "sections_present": [
+      "1. Scope",
+      "2. Minimal state machine",
+      "3. Machine-readable task record",
+      "4. ACK definition",
+      "5. Completion Proof record",
+      "6. Machine-readable dependency solution",
+      "7. Idempotency key",
+      "8. School/Home lease and heartbeat",
+      "9. Fail-closed Gate",
+      "10. Restart and context-compaction recovery",
+      "11. WP001 first-loop expected evidence",
+      "12. Acceptance tests"
+    ],
+    "section4_ack_rules_verbatim": "ACK = YES only if expected_repository == observed_repository AND expected_branch == observed_branch AND expected_artifact_path == observed_artifact_path AND expected_commit == observed_commit AND expected_content_sha256 == observed_content_sha256 AND observer != builder AND observation_method is recorded. Any mismatch gives STALE or NO; missing observation gives UNKNOWN."
+  },
+  "comparison": {
+    "repository_match": true,
+    "branch_match_live": true,
+    "branch_match_cached": true,
+    "artifact_path_match": true,
+    "commit_match_local_and_cached": true,
+    "commit_match_live_remote": true,
+    "expected_commit_is_ancestor_of_live_remote_main": true,
+    "content_sha256_match": true,
+    "observer_is_not_builder": true
+  },
+  "ack": "YES",
+  "mismatch_reasons": [],
+  "parent_wp001_gate": "BLOCK",
+  "wp001_closed": false,
+  "notes": [
+    "R2 (UNKNOWN) is preserved unchanged; this R3 upgrades the recipient observation to YES after read-only bypass was granted for live git ls-remote.",
+    "SCHEMA_v0.1.md §11 remains binding: even with steps 2-5 passing, parent WP001 is BLOCKED by the outstanding Constitution/mailbox conflict and is NOT CLOSED until Ray acts.",
+    "This ACK is a recipient observation only. It does not edit any other file, does not commit, and does not push.",
+    "ACK = YES here does not by itself advance the task to ACKED; per §4 that transition also requires the ACK record itself to be recognised by the RayFlow verifier alongside all other §2 evidence.",
+    "This ACK targets a specific commit and specific content bytes. If a future commit rewrites 04_KNOWLEDGE_OS/SCHEMA_v0.1.md, this ACK does not carry over — a fresh recipient observation is required against the new commit and hash."
+  ]
+}

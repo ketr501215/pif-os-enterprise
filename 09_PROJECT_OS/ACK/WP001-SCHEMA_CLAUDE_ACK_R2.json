@@ -1,0 +1,91 @@
+{
+  "schema_version": "rayflow.ack/v0.1",
+  "task_id": "WP001-SCHEMA",
+  "ack_id": "WP001-SCHEMA_CLAUDE_ACK_R2",
+  "observed_at": "2026-09-15T10:28:27Z",
+  "observer": {
+    "identity": "Claude Code (claude-opus-4-7[1m])",
+    "role": "recipient-side observer (independent of builder Codex)",
+    "session": "fresh-context R2 verification for WP001-SCHEMA",
+    "machine_site": "HOME (Windows 10 Pro, PowerShell/Bash, workspace F:\\11-2 廠家PIF工作區\\_系統開發\\pif-os-enterprise)"
+  },
+  "expected": {
+    "repository": "https://github.com/ketr501215/pif-os-enterprise.git",
+    "branch": "main",
+    "artifact_path": "04_KNOWLEDGE_OS/SCHEMA_v0.1.md",
+    "commit": "6a268371c9825325df63a9f55a4a49effb38ecd9",
+    "content_sha256": "3f6907289a2d3ac8882a4b84167e9d90c15d7c5a4bd94e690b49fc6b9be526fc"
+  },
+  "observed": {
+    "repository": "https://github.com/ketr501215/pif-os-enterprise.git",
+    "branch_local_HEAD": "main",
+    "branch_remote_tracking_cached": "refs/remotes/origin/main -> 6a268371c9825325df63a9f55a4a49effb38ecd9 (cached, NOT confirmed by live ls-remote)",
+    "live_remote_tip": null,
+    "artifact_path": "04_KNOWLEDGE_OS/SCHEMA_v0.1.md",
+    "commit": "6a268371c9825325df63a9f55a4a49effb38ecd9",
+    "blob_oid": "b9eca41c9e69800a7741528d2b922daf9123179e",
+    "blob_size_bytes": 12758,
+    "content_sha256": "3f6907289a2d3ac8882a4b84167e9d90c15d7c5a4bd94e690b49fc6b9be526fc"
+  },
+  "observation_method": {
+    "steps": [
+      "git remote -v => origin fetch/push URL matches expected repository URL exactly",
+      "git rev-parse HEAD => 6a268371c9825325df63a9f55a4a49effb38ecd9 (matches expected commit)",
+      "git for-each-ref refs/remotes/origin/main => 6a268371c9825325df63a9f55a4a49effb38ecd9 (CACHED tracking ref only)",
+      "git log -1 --pretty=fuller 6a26837... => 'fix: fail closed RayFlow evidence validation', AuthorDate 2026-09-15T18:25:12+08:00",
+      "git cat-file -p <commit>^{tree} => 04_KNOWLEDGE_OS subtree 81eefb9071e3ebf3ed047faeb54678c729a781ec present",
+      "git cat-file -p 81eefb90... => SCHEMA_v0.1.md blob b9eca41c9e69800a7741528d2b922daf9123179e",
+      "git cat-file -s b9eca41c... => 12758 bytes",
+      "git cat-file blob b9eca41c... | sha256sum => 3f6907289a2d3ac8882a4b84167e9d90c15d7c5a4bd94e690b49fc6b9be526fc (matches expected, case-insensitive)",
+      "Read committed bytes => confirmed to be 'Knowledge OS / RayFlow Task-State Schema v0.1' authored by builder Codex against base d655ea5..., section §4 defines ACK exactly as used here"
+    ],
+    "live_ls_remote_performed": false,
+    "live_ls_remote_reason": "Sandbox denied approval for git ls-remote origin refs/heads/main and for GitHub API/WebFetch calls to https://api.github.com/repos/ketr501215/pif-os-enterprise/branches/main and for a curl fetch of the same. Only cached refs/remotes/origin/main was available. Per SCHEMA_v0.1.md §3 'artifact and commit proof' rule 4 and §11 step 3, live remote observation is required for PUBLISHED -> OBSERVED; a cached tracking ref alone is not sufficient."
+  },
+  "content_read": {
+    "confirmed_is_wp001_schema": true,
+    "title_line": "# Knowledge OS / RayFlow Task-State Schema v0.1",
+    "status_line": "Status: CANDIDATE / NOT ACTIVATED",
+    "task_line": "Task: `WP001-SCHEMA`",
+    "builder_line": "Builder: Codex",
+    "base_commit_declared_in_body": "d655ea5228cdc386298863682e4ac55139f7a4c6",
+    "date_line": "2026-09-15",
+    "sections_present": [
+      "1. Scope",
+      "2. Minimal state machine",
+      "3. Machine-readable task record",
+      "4. ACK definition",
+      "5. Completion Proof record",
+      "6. Machine-readable dependency solution",
+      "7. Idempotency key",
+      "8. School/Home lease and heartbeat",
+      "9. Fail-closed Gate",
+      "10. Restart and context-compaction recovery",
+      "11. WP001 first-loop expected evidence",
+      "12. Acceptance tests"
+    ],
+    "section4_ack_rules_verbatim": "ACK = YES only if expected_repository == observed_repository AND expected_branch == observed_branch AND expected_artifact_path == observed_artifact_path AND expected_commit == observed_commit AND expected_content_sha256 == observed_content_sha256 AND observer != builder AND observation_method is recorded. Any mismatch gives STALE or NO; missing observation gives UNKNOWN."
+  },
+  "comparison": {
+    "repository_match": true,
+    "branch_match_live": null,
+    "branch_match_cached": true,
+    "artifact_path_match": true,
+    "commit_match_local_and_cached": true,
+    "commit_match_live_remote": null,
+    "content_sha256_match": true,
+    "observer_is_not_builder": true
+  },
+  "ack": "UNKNOWN",
+  "mismatch_reasons": [
+    "live_ls_remote_not_performed: sandbox blocked git ls-remote and GitHub API calls; live origin/main tip was not directly observed by this recipient in this session. Cached refs/remotes/origin/main equals the expected commit, but the schema requires live observation (§3 rule 4, §11 step 3) before ACK can advance to YES.",
+    "no_content_or_hash_mismatch_detected: repository, artifact path, commit (local + cached), content SHA-256, and body identity all match expected. The sole reason ACK is not YES is the missing live remote observation."
+  ],
+  "parent_wp001_gate": "BLOCK",
+  "wp001_closed": false,
+  "notes": [
+    "Per SCHEMA_v0.1.md §11: even if steps 2-5 pass, parent WP001 remains BLOCKED by the outstanding Constitution/mailbox conflict and is NOT CLOSED until Ray acts.",
+    "This ACK is a recipient observation only. It does not edit any other file, does not commit, and does not push.",
+    "If the sandbox is later re-approved to run git ls-remote origin refs/heads/main and GitHub API GET /repos/ketr501215/pif-os-enterprise/branches/main, a follow-up ACK (R3) can upgrade ack from UNKNOWN to YES provided the live tip still equals or contains 6a268371c9825325df63a9f55a4a49effb38ecd9 and the blob SHA re-computes to 3f6907289a2d3ac8882a4b84167e9d90c15d7c5a4bd94e690b49fc6b9be526fc."
+  ]
+}
