@@ -1,0 +1,183 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pif-os.example/schema/rayflow-task-state-v0.1.json",
+  "title": "RayFlow Task State v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "task_id",
+    "work_package_id",
+    "title",
+    "requirement_revision",
+    "idempotency_key",
+    "criticality",
+    "current_state",
+    "actor",
+    "dependencies",
+    "artifact",
+    "delivery",
+    "verification",
+    "gate",
+    "lease",
+    "recovery",
+    "history",
+    "updated_at"
+  ],
+  "properties": {
+    "schema_version": {"const": "rayflow.task-state/v0.1"},
+    "task_id": {"type": "string", "pattern": "^[A-Z0-9][A-Z0-9._-]{2,127}$"},
+    "work_package_id": {"type": "string", "minLength": 3},
+    "title": {"type": "string", "minLength": 1},
+    "requirement_revision": {"type": "string", "minLength": 1},
+    "idempotency_key": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "criticality": {"enum": ["CRITICAL", "NORMAL"]},
+    "current_state": {
+      "enum": ["CREATED", "DISPATCHED", "ACCEPTED", "RUNNING", "PRODUCED", "PERSISTED", "PUBLISHED", "OBSERVED", "ACKED", "VERIFIED", "CLOSED"]
+    },
+    "actor": {"$ref": "#/$defs/actor"},
+    "dependencies": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/dependency"}
+    },
+    "artifact": {"$ref": "#/$defs/artifact"},
+    "delivery": {"$ref": "#/$defs/delivery"},
+    "verification": {"$ref": "#/$defs/verification"},
+    "gate": {"$ref": "#/$defs/gate"},
+    "lease": {"$ref": "#/$defs/lease"},
+    "recovery": {"$ref": "#/$defs/recovery"},
+    "history": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/history_event"}
+    },
+    "updated_at": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[A-Fa-f0-9]{64}$"},
+    "commit": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+    "actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["agent_id", "role", "vendor", "machine_id", "site", "session_id"],
+      "properties": {
+        "agent_id": {"type": "string", "minLength": 1},
+        "role": {"enum": ["HUMAN", "LEAD", "PLANNER", "BUILDER", "VERIFIER", "ADVERSARY", "ORCHESTRATOR"]},
+        "vendor": {"type": "string", "minLength": 1},
+        "machine_id": {"type": "string", "minLength": 1},
+        "site": {"enum": ["HOME", "SCHOOL", "CLOUD", "OTHER"]},
+        "session_id": {"type": "string", "minLength": 1}
+      }
+    },
+    "dependency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["task_id", "required_state", "observed_state", "satisfied", "evidence_ref"],
+      "properties": {
+        "task_id": {"type": "string", "minLength": 3},
+        "required_state": {"type": "string"},
+        "observed_state": {"type": "string"},
+        "satisfied": {"type": "boolean"},
+        "evidence_ref": {"type": ["string", "null"]}
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "branch", "path", "content_sha256", "git_commit"],
+      "properties": {
+        "repository": {"type": "string", "minLength": 1},
+        "branch": {"type": "string", "minLength": 1},
+        "path": {"type": "string", "pattern": "^(?!/)(?!.*\\.\\./).+"},
+        "content_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "git_commit": {"anyOf": [{"$ref": "#/$defs/commit"}, {"type": "null"}]}
+      }
+    },
+    "delivery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["expected_commit", "observed_commit", "expected_content_sha256", "observed_content_sha256", "observer_agent_id", "observation_method", "ack"],
+      "properties": {
+        "expected_commit": {"anyOf": [{"$ref": "#/$defs/commit"}, {"type": "null"}]},
+        "observed_commit": {"anyOf": [{"$ref": "#/$defs/commit"}, {"type": "null"}]},
+        "expected_content_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "observed_content_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "observer_agent_id": {"type": ["string", "null"]},
+        "observation_method": {"type": ["string", "null"]},
+        "ack": {"enum": ["YES", "NO", "STALE", "UNKNOWN"]}
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verifier_agent_id", "method_class", "independent_of_builder", "verdict", "evidence_ref"],
+      "properties": {
+        "verifier_agent_id": {"type": ["string", "null"]},
+        "method_class": {"enum": ["NONE", "RUNTIME_REPRODUCTION", "SCHEMA_VALIDATION", "ADVERSARIAL_TEST", "PROPERTY_TEST", "ARTIFACT_HASH"]},
+        "independent_of_builder": {"type": "boolean"},
+        "verdict": {"enum": ["PASS", "BLOCK", "DEGRADED", "UNKNOWN"]},
+        "evidence_ref": {"type": ["string", "null"]}
+      }
+    },
+    "alarm": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["alarm_id", "severity", "verdict", "evidence_ref"],
+      "properties": {
+        "alarm_id": {"type": "string", "minLength": 1},
+        "severity": {"enum": ["CRITICAL", "NONCRITICAL"]},
+        "verdict": {"enum": ["PASS", "BLOCK", "DEGRADED", "UNKNOWN"]},
+        "evidence_ref": {"type": ["string", "null"]}
+      }
+    },
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["declared_verdict", "computed_verdict", "alarms"],
+      "properties": {
+        "declared_verdict": {"enum": ["PASS", "BLOCK", "DEGRADED", "UNKNOWN"]},
+        "computed_verdict": {"enum": ["PASS", "BLOCK", "DEGRADED", "UNKNOWN"]},
+        "alarms": {"type": "array", "items": {"$ref": "#/$defs/alarm"}}
+      }
+    },
+    "lease": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["resource", "lease_id", "holder_agent_id", "machine_id", "site", "fencing_token", "heartbeat_at", "expires_at", "status"],
+      "properties": {
+        "resource": {"type": "string", "minLength": 1},
+        "lease_id": {"type": ["string", "null"]},
+        "holder_agent_id": {"type": ["string", "null"]},
+        "machine_id": {"type": ["string", "null"]},
+        "site": {"enum": ["HOME", "SCHOOL", "CLOUD", "OTHER", "NONE"]},
+        "fencing_token": {"type": "integer", "minimum": 0},
+        "heartbeat_at": {"type": ["string", "null"], "format": "date-time"},
+        "expires_at": {"type": ["string", "null"], "format": "date-time"},
+        "status": {"enum": ["NONE", "ACTIVE", "RELEASED", "EXPIRED"]}
+      }
+    },
+    "recovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["attempt_id", "previous_attempt_id", "last_durable_state", "context_digest", "resume_allowed"],
+      "properties": {
+        "attempt_id": {"type": "string", "minLength": 1},
+        "previous_attempt_id": {"type": ["string", "null"]},
+        "last_durable_state": {"type": "string"},
+        "context_digest": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "resume_allowed": {"type": "boolean"}
+      }
+    },
+    "history_event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sequence", "from", "to", "at", "evidence_ref"],
+      "properties": {
+        "sequence": {"type": "integer", "minimum": 1},
+        "from": {"type": ["string", "null"]},
+        "to": {"type": "string"},
+        "at": {"type": "string", "format": "date-time"},
+        "evidence_ref": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}
